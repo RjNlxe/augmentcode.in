@@ -1,0 +1,8 @@
+# ads.txt file for augmentcode.in
+# This file is used to authorize digital ad sellers
+
+# Google AdSense
+google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
+
+# Other ad networks can be added here
+# Format: domain, publisher_id, relationship, certification_authority_id

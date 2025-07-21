@@ -1,0 +1,39 @@
+# Robots.txt for Augment Code - AI Coding Assistant
+# Optimized for maximum SEO crawling and indexing
+
+User-agent: *
+Allow: /
+Crawl-delay: 1
+
+# Special instructions for major search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0.5
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0.5
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 1
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 1
+
+# Sitemaps
+Sitemap: https://augmentcode.in/sitemap.xml
+Sitemap: https://augmentcode.in/sitemap-ai-tools.xml
+Sitemap: https://augmentcode.in/sitemap-programming.xml
+
+# Host directive
+Host: https://augmentcode.in

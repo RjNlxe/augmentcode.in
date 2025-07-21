@@ -1,0 +1,66 @@
+{
+  "name": "augmentcode-coming-soon",
+  "version": "1.0.0",
+  "description": "🚀 Augment Code - #1 AI Coding Assistant | Best AI Programming Tools 2025 | Free AI Developer Tools | AI Code Completion | Smart Programming Assistant",
+  "keywords": [
+    "AI coding assistant",
+    "programming tools",
+    "AI developer tools",
+    "code completion",
+    "AI programming assistant",
+    "coding AI",
+    "developer productivity",
+    "augment code",
+    "github copilot alternative",
+    "free ai tools"
+  ],
+  "author": {
+    "name": "Augment Code Community",
+    "email": "team@augmentcode.in",
+    "url": "https://augmentcode.in"
+  },
+  "homepage": "https://augmentcode.in",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/svsairevanth12/augmentcode.in-comming-soon.git"
+  },
+  "bugs": {
+    "url": "https://github.com/svsairevanth12/augmentcode.in-comming-soon/issues"
+  },
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next build && next export",
+    "analyze": "cross-env ANALYZE=true next build",
+    "sitemap": "next-sitemap",
+    "seo-check": "lighthouse --chrome-flags='--headless' --output=html --output-path=./lighthouse-report.html https://augmentcode.in"
+  },
+  "dependencies": {
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "framer-motion": "^11.15.0",
+    "lucide-react": "^0.468.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "^15.1.0",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "cross-env": "^7.0.3",
+    "next-sitemap": "^4.2.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

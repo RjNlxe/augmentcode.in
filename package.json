@@ -34,10 +34,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "export": "next build && next export",
+    "export": "next build",
     "analyze": "cross-env ANALYZE=true next build",
     "sitemap": "next-sitemap",
-    "seo-check": "lighthouse --chrome-flags='--headless' --output=html --output-path=./lighthouse-report.html https://augmentcode.in"
+    "seo-check": "lighthouse --chrome-flags='--headless' --output=html --output-path=./lighthouse-report.html https://augmentcode.in",
+    "vercel-build": "next build",
+    "postbuild": "next-sitemap",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf .next out"
   },
   "dependencies": {
     "next": "^15.1.0",

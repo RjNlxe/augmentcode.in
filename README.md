@@ -1,21 +1,34 @@
-# augmentcode.in - Coming Soon
+# 🚀 Augment Code - Coming Soon Website
 
-A beautiful, animated coming soon page for something special being built for Augment Code users.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/svsairevanth12/augmentcode.in-coming-soon)
 
-## About
+> **The ultimate AI coding assistant platform is launching soon!** Join thousands of developers using the world's most advanced AI programming tools.
 
-Something special is coming for Augment Code users. Built with the fans of Augment Code.
+## ✨ Features
 
-## Features
+- 🎯 **SEO Optimized** - 500+ keywords targeting AI and programming searches
+- ⚡ **Lightning Fast** - Optimized for Core Web Vitals and performance
+- 📱 **Responsive Design** - Perfect on all devices
+- 🎭 **Smooth Animations** - Beautiful Framer Motion animations
+- ⏰ **Live Countdown** - Real-time countdown to July 26, 2025 9:30 PM IST
+- 🔍 **Advanced SEO** - Multiple structured data schemas for rich snippets
+- 🚀 **Vercel Ready** - One-click deployment to Vercel
 
-- 🎨 Modern, clean design with Augment Code inspired green color palette
-- ⏰ Real-time countdown timer with stunning flip animations
-- 🎭 Smooth 3D animations and transitions using Framer Motion
-- 📱 Fully responsive design for all devices
-- ⚡ Built with Next.js 15 and React 19
-- 🎯 SEO optimized with proper meta tags
-- 🌟 Animated background elements and floating particles
-- 💫 3D flip countdown with particle effects
+## 🚀 Quick Deploy to Vercel
+
+### Option 1: One-Click Deploy
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/svsairevanth12/augmentcode.in-coming-soon)
+
+### Option 2: Manual Deploy
+1. Fork this repository
+2. Connect to Vercel
+3. Deploy automatically
+
+### Option 3: Vercel CLI
+```bash
+npm i -g vercel
+vercel --prod
+```
 
 ## Tech Stack
 

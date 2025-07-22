@@ -93,8 +93,6 @@ export const metadata: Metadata = {
     creator: '@augmentcode',
     images: ['https://augmentcode.in/twitter-image.jpg'],
   },
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=5',
-  themeColor: '#22c55e',
   category: 'Technology',
 }
 

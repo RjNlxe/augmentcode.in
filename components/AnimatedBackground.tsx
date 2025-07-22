@@ -1,8 +1,9 @@
 'use client'
 
+import { memo } from 'react'
 import { motion } from 'framer-motion'
 
-export default function AnimatedBackground() {
+const AnimatedBackground = memo(function AnimatedBackground() {
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
       {/* Gradient Orbs */}
@@ -101,4 +102,6 @@ export default function AnimatedBackground() {
       </svg>
     </div>
   )
-}
+})
+
+export default AnimatedBackground

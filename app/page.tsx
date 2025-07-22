@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { Code2, Sparkles, ArrowRight, Heart, ExternalLink } from 'lucide-react'
 import Image from 'next/image'
@@ -10,8 +11,10 @@ import FloatingElements from '@/components/FloatingElements'
 export default function Home() {
   return (
     <main className="relative min-h-screen flex flex-col">
-      <AnimatedBackground />
-      <FloatingElements />
+      <Suspense fallback={<div className="fixed inset-0 bg-dark-950" />}>
+        <AnimatedBackground />
+        <FloatingElements />
+      </Suspense>
       
       {/* Header */}
       <motion.header 
@@ -82,7 +85,9 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
           >
-            <CountdownTimer targetDate="2025-07-26T21:30:00+05:30" />
+            <Suspense fallback={<div className="h-32 bg-dark-900 rounded-2xl animate-pulse" />}>
+              <CountdownTimer targetDate="2025-07-26T21:30:00+05:30" />
+            </Suspense>
           </motion.div>
 
           {/* Visit Augment Code Button */}

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 import { motion } from 'framer-motion'
 import { Code, Terminal, Cpu, Zap, GitBranch, Database } from 'lucide-react'
 
@@ -24,7 +24,7 @@ const particlePositions = [
   { left: 65, top: 55 }, { left: 35, top: 35 }, { left: 75, top: 65 }, { left: 25, top: 45 },
 ]
 
-export default function FloatingElements() {
+const FloatingElements = memo(function FloatingElements() {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -92,4 +92,6 @@ export default function FloatingElements() {
       ))}
     </div>
   )
-}
+})
+
+export default FloatingElements

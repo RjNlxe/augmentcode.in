@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface TimeLeft {
@@ -20,7 +20,7 @@ interface FlipNumberProps {
   index: number
 }
 
-function FlipNumber({ value, label, index }: FlipNumberProps) {
+const FlipNumber = memo(function FlipNumber({ value, label, index }: FlipNumberProps) {
   const formattedValue = value.toString().padStart(2, '0')
 
   return (
@@ -157,7 +157,7 @@ function FlipNumber({ value, label, index }: FlipNumberProps) {
       />
     </motion.div>
   )
-}
+})
 
 export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
@@ -168,23 +168,23 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
   })
   const [mounted, setMounted] = useState(false)
 
+  const calculateTimeLeft = useCallback((): TimeLeft => {
+    const difference = +new Date(targetDate) - +new Date()
+
+    if (difference > 0) {
+      return {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60)
+      }
+    }
+
+    return { days: 0, hours: 0, minutes: 0, seconds: 0 }
+  }, [targetDate])
+
   useEffect(() => {
     setMounted(true)
-    
-    const calculateTimeLeft = (): TimeLeft => {
-      const difference = +new Date(targetDate) - +new Date()
-      
-      if (difference > 0) {
-        return {
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60)
-        }
-      }
-      
-      return { days: 0, hours: 0, minutes: 0, seconds: 0 }
-    }
 
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft())
@@ -194,7 +194,7 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
     setTimeLeft(calculateTimeLeft())
 
     return () => clearInterval(timer)
-  }, [targetDate])
+  }, [calculateTimeLeft])
 
   if (!mounted) {
     return (

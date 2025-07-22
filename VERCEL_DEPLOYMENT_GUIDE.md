@@ -32,11 +32,11 @@ vercel --prod
 - **SEO redirects** and rewrites
 - **Cache optimization** for static assets
 
-### 🎯 **Optimizations Included:**
-- **Multi-region deployment** (US, India, Japan)
+### 🎯 **Optimizations Included (Free Plan Compatible):**
+- **Single-region deployment** (automatic region selection)
 - **Advanced caching** for images and static files
-- **Security headers** for protection
-- **SEO headers** for search engines
+- **Basic redirects** for SEO
+- **Clean URLs** for better user experience
 - **Performance optimization** for Core Web Vitals
 
 ## 🌍 **CUSTOM DOMAIN SETUP**

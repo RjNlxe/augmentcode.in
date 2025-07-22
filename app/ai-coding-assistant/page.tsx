@@ -17,7 +17,7 @@ export default function AICodingAssistant() {
           AI Coding Assistant - Augment Code
         </h1>
         <p className="text-xl text-gray-300 mb-8">
-          Experience the world's most advanced AI coding assistant. Boost your programming productivity with intelligent code completion, smart suggestions, and AI-powered development tools.
+          Experience the world&apos;s most advanced AI coding assistant. Boost your programming productivity with intelligent code completion, smart suggestions, and AI-powered development tools.
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

@@ -19,44 +19,38 @@ export default function Home() {
   const featuredRules = [
     {
       title: "Design System",
-      description: "Beautiful UI components and design patterns for modern applications",
-      icon: <Palette className="w-8 h-8" />,
-      gradient: "from-pink-500 via-rose-500 to-purple-600",
+      description: "Beautiful UI components and design patterns",
+      icon: <Palette className="w-5 h-5" />,
       delay: 0.1
     },
     {
       title: "Deep Learning",
-      description: "Advanced AI/ML patterns and neural network architectures",
-      icon: <Brain className="w-8 h-8" />,
-      gradient: "from-blue-500 via-cyan-500 to-indigo-600",
+      description: "Advanced AI/ML patterns and neural networks",
+      icon: <Brain className="w-5 h-5" />,
       delay: 0.2
     },
     {
       title: "Django Framework",
-      description: "Scalable Python web development with best practices",
-      icon: <Globe className="w-8 h-8" />,
-      gradient: "from-green-500 via-emerald-500 to-teal-600",
+      description: "Scalable Python web development practices",
+      icon: <Globe className="w-5 h-5" />,
       delay: 0.3
     },
     {
       title: "Chrome Extensions",
-      description: "Modern browser extension development patterns",
-      icon: <Rocket className="w-8 h-8" />,
-      gradient: "from-yellow-500 via-orange-500 to-red-600",
+      description: "Modern browser extension development",
+      icon: <Rocket className="w-5 h-5" />,
       delay: 0.4
     },
     {
       title: "Next.js Mastery",
-      description: "Performance-first React applications and optimization",
-      icon: <Zap className="w-8 h-8" />,
-      gradient: "from-purple-500 via-violet-500 to-indigo-600",
+      description: "Performance-first React applications",
+      icon: <Zap className="w-5 h-5" />,
       delay: 0.5
     },
     {
       title: "Python & Rust",
-      description: "High-performance systems programming integration",
-      icon: <Code2 className="w-8 h-8" />,
-      gradient: "from-red-500 via-pink-500 to-rose-600",
+      description: "High-performance systems programming",
+      icon: <Code2 className="w-5 h-5" />,
       delay: 0.6
     }
   ]
@@ -183,17 +177,17 @@ export default function Home() {
 
 
           {/* Featured Rules */}
-          <div className="space-y-16 animate-fade-in-delay-3">
-            <div className="text-center space-y-6">
-              <h2 className="text-4xl md:text-6xl font-black text-white">
-                Featured <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Rules</span>
+          <div className="space-y-12 animate-fade-in-delay-3">
+            <div className="text-center space-y-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-white">
+                Featured <span className="text-gray-400">Rules</span>
               </h2>
-              <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-sm text-gray-500 max-w-2xl mx-auto">
                 Handpicked coding patterns that will transform your development workflow
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {featuredRules.map((rule, index) => (
                 <div
                   key={index}
@@ -203,28 +197,28 @@ export default function Home() {
                   }}
                 >
                   {/* Card Glow Effect */}
-                  <div className={`absolute inset-0 bg-gradient-to-r ${rule.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-700 scale-105`} />
+                  <div className="absolute inset-0 bg-white/5 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-all duration-500 scale-105" />
 
                   {/* Card */}
-                  <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 hover:bg-white/10 transition-all duration-500 hover:scale-105 hover:border-white/20">
+                  <div className="relative bg-black/20 backdrop-blur-xl border border-white/10 rounded-2xl p-4 hover:bg-white/5 hover:border-white/20 transition-all duration-300 hover:scale-105">
                     {/* Icon */}
-                    <div className={`w-16 h-16 bg-gradient-to-r ${rule.gradient} rounded-2xl flex items-center justify-center mb-6 text-white shadow-2xl group-hover:scale-110 transition-transform duration-500`}>
+                    <div className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center mb-3 text-white shadow-lg group-hover:scale-110 transition-all duration-300">
                       {rule.icon}
                     </div>
 
                     {/* Content */}
-                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-emerald-400 group-hover:to-cyan-400 group-hover:bg-clip-text transition-all duration-500">
+                    <h3 className="text-sm font-bold text-white mb-2 group-hover:text-gray-200 transition-colors duration-300">
                       {rule.title}
                     </h3>
 
-                    <p className="text-gray-400 leading-relaxed text-lg group-hover:text-gray-300 transition-colors duration-500">
+                    <p className="text-gray-400 text-xs leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
                       {rule.description}
                     </p>
 
                     {/* Arrow */}
-                    <div className="mt-6 flex justify-end">
-                      <div className="w-12 h-12 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                        <ArrowRight className="w-6 h-6 text-emerald-400 group-hover:translate-x-1 transition-transform duration-500" />
+                    <div className="mt-3 flex justify-end">
+                      <div className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center group-hover:bg-white/20 transition-all duration-300">
+                        <ArrowRight className="w-3 h-3 text-gray-400 group-hover:text-white group-hover:translate-x-0.5 transition-all duration-300" />
                       </div>
                     </div>
                   </div>
@@ -233,13 +227,13 @@ export default function Home() {
             </div>
 
             {/* View All Button */}
-            <div className="text-center pt-12">
+            <div className="text-center pt-8">
               <Link
                 href="/rules"
-                className="group relative inline-flex items-center space-x-4 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 hover:from-emerald-500/20 hover:to-cyan-500/20 backdrop-blur-xl border border-emerald-500/30 hover:border-emerald-500/50 px-12 py-6 rounded-3xl font-bold text-white transition-all duration-500 hover:scale-110"
+                className="group inline-flex items-center space-x-2 bg-white/5 hover:bg-white/10 backdrop-blur-xl border border-white/20 hover:border-white/30 px-6 py-3 rounded-xl font-medium text-white transition-all duration-300 hover:scale-105"
               >
-                <span className="text-2xl">View All Rules</span>
-                <ArrowRight className="w-8 h-8 group-hover:translate-x-2 transition-transform duration-500" />
+                <span className="text-sm">View All Rules</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </div>
           </div>

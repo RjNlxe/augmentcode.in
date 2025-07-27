@@ -597,6 +597,7 @@ ${rule.content}
                   }`}
                   onClick={() => setSelectedRule(rule)}
                 >
+                  <div>
                     {viewMode === 'grid' ? (
                       // Grid View
                       <>

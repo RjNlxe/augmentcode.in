@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Filter, Code, Star, Download, Copy, ChevronDown, X, Grid, List, BookOpen, Zap, Tag, Eye } from 'lucide-react'
+import { Search, Filter, Code, Star, Download, Copy, ChevronDown, X, Grid, List, BookOpen, Zap, Tag, Eye, FileDown } from 'lucide-react'
 import { getAllRules, getLanguages, getCategories, type Rule } from '@/lib/rules-loader'
 
 
@@ -60,83 +60,151 @@ export default function RulesPage() {
     }
   }
 
+  const downloadRule = (rule: Rule) => {
+    const content = `# ${rule.title}
+
+## Description
+${rule.description}
+
+## Language
+${rule.language}
+
+## Category
+${rule.category}
+
+## Tags
+${rule.tags.join(', ')}
+
+## Libraries
+${rule.libs.join(', ')}
+
+## Content
+${rule.content}
+`
+
+    const blob = new Blob([content], { type: 'text/markdown' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${rule.slug || rule.title.toLowerCase().replace(/\s+/g, '-')}.md`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <main className="min-h-screen bg-dark-950 text-white">
       {/* Header */}
-      <div className="bg-gradient-to-r from-dark-900 to-dark-800 py-12 px-6 md:px-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="bg-gradient-to-br from-emerald-900/20 via-dark-900 to-green-900/20 py-12 px-6 md:px-8 relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-emerald-500 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-40 h-40 bg-green-500 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 w-24 h-24 bg-teal-500 rounded-full blur-2xl animate-pulse delay-500"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
             className="text-center"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">
-              <span className="gradient-text">Rules Directory</span>
-            </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+            <motion.h1
+              className="text-4xl md:text-6xl font-bold mb-4"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+            >
+              <span className="bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 bg-clip-text text-transparent">
+                Rules Directory
+              </span>
+            </motion.h1>
+            <motion.p
+              className="text-xl text-gray-300 max-w-3xl mx-auto mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
               Discover {allRules.length}+ powerful coding rules across {languages.length - 1} languages.
               Find exactly what you need with our smart search and filtering.
-            </p>
+            </motion.p>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto">
-              <div className="glass-effect p-4 rounded-xl text-center">
-                <div className="text-2xl font-bold gradient-text">{allRules.length}+</div>
-                <div className="text-sm text-gray-400">Rules</div>
-              </div>
-              <div className="glass-effect p-4 rounded-xl text-center">
-                <div className="text-2xl font-bold gradient-text">{languages.length - 1}</div>
-                <div className="text-sm text-gray-400">Languages</div>
-              </div>
-              <div className="glass-effect p-4 rounded-xl text-center">
-                <div className="text-2xl font-bold gradient-text">{categories.length - 1}</div>
-                <div className="text-sm text-gray-400">Categories</div>
-              </div>
-              <div className="glass-effect p-4 rounded-xl text-center">
-                <div className="text-2xl font-bold gradient-text">Free</div>
-                <div className="text-sm text-gray-400">Always</div>
-              </div>
-            </div>
+            <motion.div
+              className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6, staggerChildren: 0.1 }}
+            >
+              {[
+                { value: `${allRules.length}+`, label: 'Rules' },
+                { value: `${languages.length - 1}`, label: 'Languages' },
+                { value: `${categories.length - 1}`, label: 'Categories' },
+                { value: 'Free', label: 'Always' }
+              ].map((stat, index) => (
+                <motion.div
+                  key={index}
+                  className="glass-effect p-4 rounded-xl text-center border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-300"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                >
+                  <div className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
+                    {stat.value}
+                  </div>
+                  <div className="text-sm text-gray-400">{stat.label}</div>
+                </motion.div>
+              ))}
+            </motion.div>
           </motion.div>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className="py-8 px-6 md:px-8 bg-dark-900/30">
+      <div className="py-8 px-6 md:px-8 bg-gradient-to-r from-emerald-900/10 to-green-900/10">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
+            transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
           >
             {/* Main Search Bar */}
-            <div className="relative max-w-4xl mx-auto mb-6">
-              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
+            <motion.div
+              className="relative max-w-4xl mx-auto mb-6"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1, duration: 0.6 }}
+            >
+              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-emerald-400 w-6 h-6" />
               <input
                 type="text"
                 placeholder="Search by rule name, description, tags, or libraries... (e.g., 'React', 'Python', 'API')"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-16 pr-6 py-5 bg-white/5 border border-gray-600 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-lg backdrop-blur-sm"
+                className="w-full pl-16 pr-6 py-5 bg-white/5 border border-emerald-500/30 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-lg backdrop-blur-sm transition-all duration-300"
               />
-            </div>
+            </motion.div>
 
             {/* Filters and Controls */}
             <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
               <div className="flex flex-wrap gap-3 items-center">
                 {/* Language Filter */}
                 <div className="relative">
-                  <button
+                  <motion.button
                     onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                    className="flex items-center space-x-2 bg-white/5 border border-gray-600 rounded-xl px-4 py-3 text-white hover:border-primary-500 transition-colors min-w-[140px] justify-between backdrop-blur-sm"
+                    className="flex items-center space-x-2 bg-white/5 border border-emerald-500/30 rounded-xl px-4 py-3 text-white hover:border-emerald-500 transition-colors min-w-[140px] justify-between backdrop-blur-sm"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
                     <span className="flex items-center space-x-2">
-                      <Code className="w-4 h-4" />
+                      <Code className="w-4 h-4 text-emerald-400" />
                       <span>{selectedLanguage}</span>
                     </span>
                     <ChevronDown className={`w-4 h-4 transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`} />
-                  </button>
+                  </motion.button>
 
                   <AnimatePresence>
                     {isLanguageOpen && (
@@ -153,8 +221,8 @@ export default function RulesPage() {
                               setSelectedLanguage(language)
                               setIsLanguageOpen(false)
                             }}
-                            className={`w-full text-left px-4 py-3 hover:bg-primary-500/20 transition-colors ${
-                              selectedLanguage === language ? 'bg-primary-500/30 text-primary-400' : 'text-gray-300'
+                            className={`w-full text-left px-4 py-3 hover:bg-emerald-500/20 transition-colors ${
+                              selectedLanguage === language ? 'bg-emerald-500/30 text-emerald-400' : 'text-gray-300'
                             }`}
                           >
                             {language}
@@ -330,46 +398,58 @@ export default function RulesPage() {
                 <motion.div
                   key={rule.id}
                   layout
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -30 }}
-                  transition={{ delay: index * 0.05, duration: 0.5 }}
-                  className={`group cursor-pointer ${
+                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -30, scale: 0.95 }}
+                  transition={{
+                    delay: index * 0.03,
+                    duration: 0.4,
+                    ease: "easeOut"
+                  }}
+                  className={`group relative overflow-hidden ${
                     viewMode === 'grid'
-                      ? 'glass-effect p-6 rounded-2xl hover:bg-white/10 transition-all duration-300 h-fit'
-                      : 'glass-effect p-4 rounded-xl hover:bg-white/10 transition-all duration-300 flex items-center space-x-4'
+                      ? 'glass-effect p-6 rounded-2xl border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-500 h-fit'
+                      : 'glass-effect p-4 rounded-xl border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-500 flex items-center space-x-4'
                   }`}
-                  onClick={() => setSelectedRule(rule)}
-                  whileHover={{ y: -2, scale: 1.02 }}
+                  whileHover={{
+                    y: -4,
+                    scale: 1.02,
+                    transition: { duration: 0.2, ease: "easeOut" }
+                  }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  {viewMode === 'grid' ? (
-                    // Grid View
-                    <>
-                      {/* Header */}
-                      <div className="mb-4">
-                        <div className="flex items-start justify-between mb-3">
-                          <h3 className="text-lg font-semibold text-white group-hover:text-primary-400 transition-colors line-clamp-2">
-                            {rule.title}
-                          </h3>
-                          <div className="flex items-center space-x-1 text-yellow-400 ml-2">
-                            <Star className="w-4 h-4 fill-current" />
-                            <span className="text-sm">{rule.rating?.toFixed(1)}</span>
+                  {/* Hover Glow Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-green-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+
+                  <div className="relative z-10" onClick={() => setSelectedRule(rule)}>
+                    {viewMode === 'grid' ? (
+                      // Grid View
+                      <>
+                        {/* Header */}
+                        <div className="mb-4">
+                          <div className="flex items-start justify-between mb-3">
+                            <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors line-clamp-2 cursor-pointer">
+                              {rule.title}
+                            </h3>
+                            <div className="flex items-center space-x-1 text-yellow-400 ml-2">
+                              <Star className="w-4 h-4 fill-current" />
+                              <span className="text-sm">{rule.rating?.toFixed(1)}</span>
+                            </div>
                           </div>
-                        </div>
 
                         <p className="text-gray-400 text-sm line-clamp-2 mb-3">
                           {rule.description}
                         </p>
 
-                        {/* Language and Category */}
-                        <div className="flex items-center space-x-2 mb-3">
-                          <span className="bg-primary-500/20 text-primary-400 px-2 py-1 rounded-lg text-xs font-medium">
-                            {rule.language}
-                          </span>
-                          <span className="bg-accent-500/20 text-accent-400 px-2 py-1 rounded-lg text-xs font-medium">
-                            {rule.category}
-                          </span>
-                        </div>
+                          {/* Language and Category */}
+                          <div className="flex items-center space-x-2 mb-3">
+                            <span className="bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-lg text-xs font-medium border border-emerald-500/30">
+                              {rule.language}
+                            </span>
+                            <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded-lg text-xs font-medium border border-green-500/30">
+                              {rule.category}
+                            </span>
+                          </div>
 
                         {/* Tags Preview */}
                         {rule.tags.length > 0 && (
@@ -386,25 +466,39 @@ export default function RulesPage() {
                         )}
                       </div>
 
-                      {/* Footer */}
-                      <div className="flex items-center justify-between text-sm text-gray-400 pt-3 border-t border-gray-700/50">
-                        <div className="flex items-center space-x-3">
-                          <div className="flex items-center space-x-1">
-                            <Download className="w-4 h-4" />
-                            <span>{rule.downloads?.toLocaleString()}</span>
-                          </div>
-                          {rule.libs.length > 0 && (
+                        {/* Footer */}
+                        <div className="flex items-center justify-between text-sm text-gray-400 pt-3 border-t border-emerald-500/20">
+                          <div className="flex items-center space-x-3">
                             <div className="flex items-center space-x-1">
-                              <BookOpen className="w-4 h-4" />
-                              <span>{rule.libs.length} libs</span>
+                              <Download className="w-4 h-4" />
+                              <span>{rule.downloads?.toLocaleString()}</span>
                             </div>
-                          )}
+                            {rule.libs.length > 0 && (
+                              <div className="flex items-center space-x-1">
+                                <BookOpen className="w-4 h-4" />
+                                <span>{rule.libs.length} libs</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <motion.button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                downloadRule(rule)
+                              }}
+                              className="flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 transition-colors p-2 rounded-lg hover:bg-emerald-500/10"
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                            >
+                              <FileDown className="w-4 h-4" />
+                              <span>Download</span>
+                            </motion.button>
+                            <div className="flex items-center space-x-1 text-emerald-400">
+                              <Eye className="w-4 h-4" />
+                              <span>View</span>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex items-center space-x-1 text-primary-400">
-                          <Eye className="w-4 h-4" />
-                          <span>View</span>
-                        </div>
-                      </div>
                     </>
                   ) : (
                     // List View
@@ -430,29 +524,44 @@ export default function RulesPage() {
                           {rule.description}
                         </p>
 
-                        <div className="flex items-center space-x-2">
-                          <span className="bg-primary-500/20 text-primary-400 px-2 py-1 rounded text-xs">
-                            {rule.language}
-                          </span>
-                          <span className="bg-accent-500/20 text-accent-400 px-2 py-1 rounded text-xs">
-                            {rule.category}
-                          </span>
-                          {rule.tags.slice(0, 2).map((tag, tagIndex) => (
-                            <span key={tagIndex} className="bg-gray-700/50 text-gray-300 px-2 py-1 rounded text-xs">
-                              {tag}
+                          <div className="flex items-center space-x-2">
+                            <span className="bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded text-xs border border-emerald-500/30">
+                              {rule.language}
                             </span>
-                          ))}
-                          {rule.tags.length > 2 && (
-                            <span className="text-gray-400 text-xs">+{rule.tags.length - 2}</span>
-                          )}
+                            <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded text-xs border border-green-500/30">
+                              {rule.category}
+                            </span>
+                            {rule.tags.slice(0, 2).map((tag, tagIndex) => (
+                              <span key={tagIndex} className="bg-gray-700/50 text-gray-300 px-2 py-1 rounded text-xs">
+                                {tag}
+                              </span>
+                            ))}
+                            {rule.tags.length > 2 && (
+                              <span className="text-gray-400 text-xs">+{rule.tags.length - 2}</span>
+                            )}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center space-x-1 text-primary-400">
-                        <Eye className="w-5 h-5" />
+                      <div className="flex items-center space-x-2">
+                        <motion.button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            downloadRule(rule)
+                          }}
+                          className="flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 transition-colors p-2 rounded-lg hover:bg-emerald-500/10"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <FileDown className="w-4 h-4" />
+                        </motion.button>
+                        <div className="flex items-center space-x-1 text-emerald-400">
+                          <Eye className="w-5 h-5" />
+                        </div>
                       </div>
-                    </>
-                  )}
+                      </>
+                    )}
+                  </div>
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -499,24 +608,25 @@ export default function RulesPage() {
             onClick={() => setSelectedRule(null)}
           >
             <motion.div
-              className="bg-dark-900 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-dark-900 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-emerald-500/30 shadow-2xl shadow-emerald-500/10"
+              initial={{ scale: 0.8, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 50 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="p-6 border-b border-gray-700">
+              <div className="p-6 border-b border-emerald-500/20 bg-gradient-to-r from-emerald-900/20 to-green-900/20">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <h2 className="text-2xl font-bold text-white mb-2">{selectedRule.title}</h2>
                     <p className="text-gray-400 mb-4">{selectedRule.description}</p>
 
                     <div className="flex flex-wrap items-center gap-3">
-                      <span className="bg-primary-500/20 text-primary-400 px-3 py-1 rounded-lg font-medium">
+                      <span className="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-lg font-medium border border-emerald-500/30">
                         {selectedRule.language}
                       </span>
-                      <span className="bg-accent-500/20 text-accent-400 px-3 py-1 rounded-lg font-medium">
+                      <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-lg font-medium border border-green-500/30">
                         {selectedRule.category}
                       </span>
                       <div className="flex items-center space-x-1 text-yellow-400">
@@ -530,12 +640,27 @@ export default function RulesPage() {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => setSelectedRule(null)}
-                    className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-                  >
-                    <X className="w-6 h-6 text-gray-400" />
-                  </button>
+                  <div className="flex items-center space-x-2">
+                    <motion.button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        downloadRule(selectedRule)
+                      }}
+                      className="flex items-center space-x-2 bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-lg text-white transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <FileDown className="w-4 h-4" />
+                      <span>Download</span>
+                    </motion.button>
+
+                    <button
+                      onClick={() => setSelectedRule(null)}
+                      className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                    >
+                      <X className="w-6 h-6 text-gray-400" />
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -568,7 +693,7 @@ export default function RulesPage() {
                         </h3>
                         <div className="flex flex-wrap gap-2">
                           {selectedRule.libs.map((lib, index) => (
-                            <span key={index} className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-lg text-sm">
+                            <span key={index} className="bg-teal-500/20 text-teal-400 px-3 py-1 rounded-lg text-sm border border-teal-500/30">
                               {lib}
                             </span>
                           ))}
@@ -582,12 +707,14 @@ export default function RulesPage() {
                 <div className="relative">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="text-lg font-semibold text-white">Rule Content</h3>
-                    <button
+                    <motion.button
                       onClick={(e) => {
                         e.stopPropagation()
                         copyToClipboard(selectedRule.content, selectedRule.id)
                       }}
-                      className="flex items-center space-x-2 bg-primary-500 hover:bg-primary-600 px-4 py-2 rounded-lg text-white transition-colors"
+                      className="flex items-center space-x-2 bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-lg text-white transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
                       {copiedId === selectedRule.id ? (
                         <>
@@ -599,10 +726,10 @@ export default function RulesPage() {
                           <span className="text-sm">Copy</span>
                         </>
                       )}
-                    </button>
+                    </motion.button>
                   </div>
 
-                  <div className="bg-dark-950 p-6 rounded-xl border border-gray-700">
+                  <div className="bg-dark-950 p-6 rounded-xl border border-emerald-500/30 shadow-inner">
                     <pre className="text-sm text-gray-300 whitespace-pre-wrap overflow-x-auto">
                       {selectedRule.content}
                     </pre>

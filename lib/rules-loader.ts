@@ -221,7 +221,12 @@ function extractCategory(tags: string[], libs: string[], slug: string): string {
 function convertRule(rule: any, index: number): Rule {
   const language = extractLanguage(rule.tags || [], rule.slug || '')
   const category = extractCategory(rule.tags || [], rule.libs || [], rule.slug || '')
-  
+
+  // Generate consistent rating and downloads based on rule content (deterministic)
+  const titleHash = rule.title ? rule.title.split('').reduce((a, b) => a + b.charCodeAt(0), 0) : 0
+  const contentHash = rule.content ? rule.content.length : 0
+  const combinedHash = titleHash + contentHash + index
+
   return {
     id: `${rule.slug || 'rule'}-${index}`,
     title: rule.title || 'Untitled Rule',
@@ -232,8 +237,8 @@ function convertRule(rule: any, index: number): Rule {
     libs: rule.libs || [],
     slug: rule.slug || '',
     content: rule.content || '',
-    rating: Math.random() * 1 + 4, // Random rating between 4-5
-    downloads: Math.floor(Math.random() * 20000) + 1000 // Random downloads
+    rating: 4.0 + ((combinedHash % 10) / 10), // Deterministic rating between 4.0-5.0
+    downloads: 1000 + ((combinedHash % 19000)) // Deterministic downloads between 1000-20000
   }
 }
 

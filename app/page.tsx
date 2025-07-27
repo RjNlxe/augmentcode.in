@@ -62,18 +62,20 @@ export default function Home() {
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
               <span className="gradient-text text-shadow-lg">
-                Launching Soon
+                🚀 We're Launching!
               </span>
               <br />
               <span className="text-white text-shadow text-3xl md:text-4xl lg:text-5xl">
-                Augment Code Community Platform
+                12 Hours Left Until Launch
               </span>
             </h1>
 
-            <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-              Something special for Augment Code users.
+            <p className="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              🎯 **The Ultimate Augment Code Community Platform** is almost here!
               <br />
-              Created by the community, for the community.
+              ⚡ **Discover the Best Rules** • 🌍 **Multi-Language Support** • 🔍 **Advanced Search** • 📚 **MCP Integration**
+              <br />
+              <span className="text-accent-400 font-semibold">Get ready for the most powerful coding experience!</span>
             </p>
           </motion.div>
 
@@ -90,24 +92,35 @@ export default function Home() {
             </Suspense>
           </motion.div>
 
-          {/* Visit Augment Code Button */}
+          {/* Action Buttons */}
           <motion.div
-            className="mt-12"
+            className="mt-12 flex flex-col sm:flex-row gap-4 justify-center items-center"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.8 }}
           >
             <motion.a
-              href="https://www.augmentcode.com"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/home"
               className="group inline-flex items-center space-x-2 bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-400 hover:to-accent-400 px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 glow-effect"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
+              <span>Preview Platform</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+            </motion.a>
+
+            <motion.a
+              href="https://www.augmentcode.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center space-x-2 glass-effect hover:bg-white/10 px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 border border-primary-500/30"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
               <span>Visit Augment Code</span>
-              <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+              <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
             </motion.a>
           </motion.div>
 

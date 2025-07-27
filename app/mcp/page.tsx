@@ -75,7 +75,15 @@ export default function MCPPage() {
                 <span>Get Started</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
               </button>
-              
+
+              <Link
+                href="/generate"
+                className="group inline-flex items-center space-x-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 glow-effect"
+              >
+                <span>Generate</span>
+                <Zap className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+              </Link>
+
               <Link
                 href="https://github.com/modelcontextprotocol/specification"
                 target="_blank"

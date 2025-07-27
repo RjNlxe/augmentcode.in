@@ -19,6 +19,7 @@ export default function AIRulesGenerator({ isOpen, onClose }: AIRulesGeneratorPr
     context: '',
     customPrompt: ''
   })
+  const [useDropdowns, setUseDropdowns] = useState(false)
 
   // Prevent background scrolling when modal is open
   useEffect(() => {

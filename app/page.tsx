@@ -136,6 +136,15 @@ export default function Home() {
               </Link>
 
               <Link
+                href="/generate"
+                className="group relative px-5 py-2.5 rounded-xl font-semibold text-white transition-all duration-300 hover:scale-105"
+              >
+                <div className="absolute inset-0 bg-white/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+                <span className="relative">Generate</span>
+              </Link>
+
+              <Link
                 href="/home"
                 className="group relative px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-xl font-semibold text-white transition-all duration-300 hover:scale-105 shadow-lg"
               >

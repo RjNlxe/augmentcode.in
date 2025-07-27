@@ -97,14 +97,20 @@ export default function Home() {
 
       {/* Header */}
       <header className="relative z-10 p-6 md:p-8">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-3 group">
-            <div className="relative w-12 h-12 rounded-2xl overflow-hidden shadow-lg group-hover:scale-110 transition-transform duration-300">
+        {/* Glass Header Background */}
+        <div className="absolute inset-0 mx-6 md:mx-8 mt-6 md:mt-8 mb-0">
+          <div className="h-full bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-2xl" />
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-transparent to-purple-500/5 rounded-3xl" />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto flex items-center justify-between py-4">
+          <div className="flex items-center space-x-4 group">
+            <div className="relative w-14 h-14 rounded-3xl overflow-hidden shadow-xl group-hover:scale-110 transition-transform duration-300 ring-2 ring-white/20">
               <Image
                 src="/image.png"
                 alt="Augment Code Logo"
-                width={48}
-                height={48}
+                width={56}
+                height={56}
                 className="w-full h-full object-cover"
                 priority
               />
@@ -114,17 +120,49 @@ export default function Home() {
             </span>
           </div>
 
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/rules" className="text-gray-300 hover:text-white transition-all duration-300 hover:scale-105 font-medium">
-              Rules
-            </Link>
-            <Link href="/mcp" className="text-gray-300 hover:text-white transition-all duration-300 hover:scale-105 font-medium">
-              MCP
-            </Link>
-            <Link href="/home" className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 px-6 py-3 rounded-2xl text-white transition-all duration-300 hover:scale-105 shadow-lg font-medium">
-              Platform
-            </Link>
+          {/* Glass Navigation */}
+          <nav className="hidden md:flex items-center">
+            <div className="flex items-center bg-white/5 backdrop-blur-xl rounded-3xl p-2 border border-white/10 shadow-lg">
+              <Link
+                href="/rules"
+                className="group relative px-6 py-3 rounded-2xl font-semibold text-white transition-all duration-300 hover:scale-105"
+              >
+                <div className="absolute inset-0 bg-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+                <span className="relative">Rules</span>
+              </Link>
+
+              <Link
+                href="/mcp"
+                className="group relative px-6 py-3 rounded-2xl font-semibold text-white transition-all duration-300 hover:scale-105"
+              >
+                <div className="absolute inset-0 bg-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+                <span className="relative">MCP</span>
+              </Link>
+
+              <Link
+                href="/home"
+                className="group relative px-6 py-3 rounded-2xl font-semibold text-white transition-all duration-300 hover:scale-105"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-2xl shadow-lg" />
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/50 to-cyan-500/50 rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
+                <span className="relative">Platform</span>
+              </Link>
+            </div>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden">
+            <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-3 border border-white/20 shadow-lg">
+              <div className="w-6 h-6 flex flex-col justify-center space-y-1">
+                <div className="w-full h-0.5 bg-white rounded-full"></div>
+                <div className="w-full h-0.5 bg-white rounded-full"></div>
+                <div className="w-full h-0.5 bg-white rounded-full"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 

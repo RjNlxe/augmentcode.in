@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
-import { Search, Code, Copy, X, Grid, List, BookOpen, Zap, Tag, Eye, FileDown, Menu, Sparkles, Layers, ChevronRight, Filter } from 'lucide-react'
+import { Search, Code, Copy, X, Grid, List, BookOpen, Zap, Tag, Eye, FileDown, Menu, Sparkles, Layers, ChevronRight, Filter, Brain, Wand2 } from 'lucide-react'
 import { getAllRules, getLanguages, getCategories, type Rule } from '@/lib/rules-loader'
+import AIRulesGenerator from '@/components/AIRulesGenerator'
 
 const ITEMS_PER_PAGE = 24 // Optimized for performance
 
@@ -20,6 +21,7 @@ export default function RulesPage() {
   const [isClient, setIsClient] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [searchDebounced, setSearchDebounced] = useState('')
+  const [aiRulesOpen, setAiRulesOpen] = useState(false)
 
   // Client-side hydration check
   useEffect(() => {
@@ -399,6 +401,19 @@ ${rule.content}
               </p>
             </div>
 
+            {/* AI Rules Generator Button */}
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setAiRulesOpen(true)}
+                className="group relative inline-flex items-center space-x-3 bg-gradient-to-r from-emerald-500 to-purple-600 hover:from-emerald-400 hover:to-purple-500 px-6 py-3 rounded-2xl font-semibold text-white transition-all duration-300 hover:scale-105 shadow-lg"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-purple-700 rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
+                <Brain className="relative w-5 h-5" />
+                <span className="relative">AI Rules</span>
+                <Wand2 className="relative w-5 h-5" />
+              </button>
+            </div>
+
             {filteredRules.length > 0 && (
               <div className="text-sm text-gray-400">
                 Sorted alphabetically by name
@@ -753,6 +768,12 @@ ${rule.content}
         </div>
       )}
       </div>
+
+      {/* AI Rules Generator Modal */}
+      <AIRulesGenerator
+        isOpen={aiRulesOpen}
+        onClose={() => setAiRulesOpen(false)}
+      />
     </main>
   )
 }

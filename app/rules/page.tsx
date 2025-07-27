@@ -324,7 +324,7 @@ ${rule.content}
                 placeholder="Search rules, tags, libraries..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-white/5 border border-emerald-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 backdrop-blur-sm transition-all duration-300"
+                className="w-full pl-12 pr-4 py-3 bg-dark-900/80 border border-emerald-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-colors duration-200"
               />
             </div>
 

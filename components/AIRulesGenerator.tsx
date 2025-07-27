@@ -182,33 +182,93 @@ Provide 3-5 concrete code examples showing:
 Make each rule specific, actionable, and include real code examples. Focus heavily on ${currentFocus} and ${currentComplexity} level practices. Generate content that developers can immediately apply to their ${currentLanguage} projects.`
   }
 
+  // Fallback rule generator when APIs fail
+  const generateFallbackRule = (language: string, category: string) => {
+    return `# ${language} ${category} Coding Rules
+
+## 🚀 Generated Offline Rules
+
+Since our AI services are temporarily unavailable, here are some essential ${language} ${category} coding rules:
+
+## Core Principles
+- Write clean, readable, and maintainable code
+- Follow ${language} naming conventions and best practices
+- Implement proper error handling and logging
+- Use version control effectively with meaningful commit messages
+- Write comprehensive tests for your code
+
+## Code Organization
+- Structure your project with clear directory hierarchy
+- Separate concerns and follow single responsibility principle
+- Use meaningful file and variable names
+- Keep functions small and focused
+- Document your code with clear comments
+
+## ${category} Best Practices
+- Follow industry standards for ${category} development
+- Implement proper security measures
+- Optimize for performance and scalability
+- Use appropriate design patterns
+- Maintain consistent code style across the project
+
+## Quality Assurance
+- Write unit tests and integration tests
+- Use linting tools and code formatters
+- Implement continuous integration/deployment
+- Conduct code reviews
+- Monitor application performance
+
+## Security Guidelines
+- Validate all user inputs
+- Use secure authentication and authorization
+- Protect against common vulnerabilities
+- Keep dependencies updated
+- Follow OWASP security guidelines
+
+---
+*Note: This is a fallback response. For more detailed and specific rules, please try again when our AI services are available.*`
+  }
+
   const generateRuleWithNvidia = async (prompt: string) => {
-    const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer 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',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'moonshotai/kimi-k2-instruct',
-        messages: [
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 4000,
-        stream: false
+    try {
+      const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer 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',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'meta/llama-3.1-405b-instruct',
+          messages: [
+            {
+              role: 'user',
+              content: prompt
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 4000,
+          stream: false
+        })
       })
-    })
 
-    if (!response.ok) {
-      throw new Error(`NVIDIA API error! status: ${response.status}`)
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('NVIDIA API Error Response:', errorText)
+        throw new Error(`NVIDIA API error! status: ${response.status}, message: ${errorText}`)
+      }
+
+      const data = await response.json()
+
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error('Invalid response format from NVIDIA API')
+      }
+
+      return data.choices[0].message.content
+    } catch (error) {
+      console.error('NVIDIA API Error:', error)
+      throw error
     }
-
-    const data = await response.json()
-    return data.choices[0].message.content
   }
 
   const generateRule = useCallback(async () => {
@@ -225,56 +285,193 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
       const systemPrompt = generateSystemPrompt()
       let rule = ''
 
-      // Try Pollinations AI first (optimized for Vercel free tier)
-      try {
-        console.log('Trying Pollinations AI API...')
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout for free tier
+      // Try multiple APIs in sequence for better reliability
+      const apis = [
+        {
+          name: 'Pollinations AI',
+          call: async () => {
+            console.log('🔄 Trying Pollinations AI...')
+            const controller = new AbortController()
+            const timeoutId = setTimeout(() => controller.abort(), 15000)
 
-        const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(systemPrompt)}`, {
-          method: 'GET',
-          headers: {
-            'Accept': 'text/plain',
-          },
-          signal: controller.signal
-        })
+            try {
+              // Try the text endpoint first
+              let response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(systemPrompt)}`, {
+                method: 'GET',
+                headers: {
+                  'Accept': 'text/plain',
+                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                  'Cache-Control': 'no-cache'
+                },
+                signal: controller.signal
+              })
 
-        clearTimeout(timeoutId)
+              // If text endpoint fails, try the chat endpoint
+              if (!response.ok) {
+                response = await fetch('https://text.pollinations.ai/openai', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    messages: [{ role: 'user', content: systemPrompt }],
+                    model: 'openai',
+                    stream: false
+                  }),
+                  signal: controller.signal
+                })
+              }
 
-        if (response.ok) {
-          rule = await response.text()
-          if (rule && rule.trim().length > 0) {
-            console.log('✅ Pollinations AI successful')
-            setGeneratedRule(rule)
-            return
+              clearTimeout(timeoutId)
+
+              if (response.ok) {
+                const contentType = response.headers.get('content-type')
+                let text = ''
+
+                if (contentType && contentType.includes('application/json')) {
+                  const data = await response.json()
+                  text = data.choices?.[0]?.message?.content || data.response || ''
+                } else {
+                  text = await response.text()
+                }
+
+                if (text && text.trim().length > 50) {
+                  return text.trim()
+                }
+              }
+              throw new Error(`Pollinations API failed: ${response.status}`)
+            } catch (error) {
+              clearTimeout(timeoutId)
+              throw error
+            }
+          }
+        },
+        {
+          name: 'NVIDIA API',
+          call: async () => {
+            console.log('🔄 Trying NVIDIA API...')
+            return await generateRuleWithNvidia(systemPrompt)
+          }
+        },
+        {
+          name: 'DeepInfra API',
+          call: async () => {
+            console.log('🔄 Trying DeepInfra API...')
+            const controller = new AbortController()
+            const timeoutId = setTimeout(() => controller.abort(), 15000)
+
+            try {
+              const response = await fetch('https://api.deepinfra.com/v1/openai/chat/completions', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                  model: 'meta-llama/Llama-2-7b-chat-hf',
+                  messages: [
+                    {
+                      role: 'user',
+                      content: systemPrompt
+                    }
+                  ],
+                  temperature: 0.7,
+                  max_tokens: 2000,
+                  stream: false
+                }),
+                signal: controller.signal
+              })
+
+              clearTimeout(timeoutId)
+
+              if (response.ok) {
+                const data = await response.json()
+                if (data && data.choices && data.choices[0] && data.choices[0].message) {
+                  return data.choices[0].message.content.trim()
+                }
+              }
+              throw new Error(`DeepInfra API failed: ${response.status}`)
+            } catch (error) {
+              clearTimeout(timeoutId)
+              throw error
+            }
+          }
+        },
+        {
+          name: 'OpenAI Compatible API',
+          call: async () => {
+            console.log('🔄 Trying OpenAI Compatible API...')
+            const controller = new AbortController()
+            const timeoutId = setTimeout(() => controller.abort(), 15000)
+
+            try {
+              // Using a free OpenAI-compatible API
+              const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                  'Authorization': 'Bearer gsk_free_api_key_placeholder',
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  model: 'llama3-8b-8192',
+                  messages: [
+                    {
+                      role: 'user',
+                      content: systemPrompt
+                    }
+                  ],
+                  temperature: 0.7,
+                  max_tokens: 2000
+                }),
+                signal: controller.signal
+              })
+
+              clearTimeout(timeoutId)
+
+              if (response.ok) {
+                const data = await response.json()
+                if (data && data.choices && data.choices[0] && data.choices[0].message) {
+                  return data.choices[0].message.content.trim()
+                }
+              }
+              throw new Error(`OpenAI Compatible API failed: ${response.status}`)
+            } catch (error) {
+              clearTimeout(timeoutId)
+              throw error
+            }
           }
         }
-        throw new Error('Pollinations API failed or returned empty response')
-      } catch (pollinationsError) {
-        console.log('❌ Pollinations AI failed, trying NVIDIA API backup...')
+      ]
 
-        // Fallback to NVIDIA API with timeout
+      // Try each API in sequence
+      for (const api of apis) {
         try {
-          const controller = new AbortController()
-          const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout for backup
-
-          rule = await generateRuleWithNvidia(systemPrompt)
-          clearTimeout(timeoutId)
-
-          if (rule && rule.trim().length > 0) {
-            console.log('✅ NVIDIA API backup successful')
+          rule = await api.call()
+          if (rule && rule.trim().length > 50) {
+            console.log(`✅ ${api.name} successful!`)
             setGeneratedRule(rule)
             return
           }
-          throw new Error('NVIDIA API returned empty response')
-        } catch (nvidiaError) {
-          console.error('❌ Both APIs failed:', { pollinationsError, nvidiaError })
-          throw new Error('Both Pollinations and NVIDIA APIs failed. Please try again later.')
+        } catch (apiError) {
+          const errorMessage = apiError instanceof Error ? apiError.message : 'Unknown error'
+          console.log(`❌ ${api.name} failed:`, errorMessage)
+          continue
         }
       }
+
+      // If all APIs fail, provide a fallback response
+      console.log('⚠️ All APIs failed, providing fallback response...')
+      const fallbackRule = generateFallbackRule(currentLanguage, currentCategory)
+      setGeneratedRule(fallbackRule)
+
     } catch (error) {
       console.error('Error generating rule:', error)
-      // Silently handle errors - no alert notifications
+      // Provide fallback even on unexpected errors
+      const currentLanguage = getCurrentValue('language')
+      const currentCategory = getCurrentValue('category')
+      const fallbackRule = generateFallbackRule(currentLanguage, currentCategory)
+      setGeneratedRule(fallbackRule)
     } finally {
       setIsGenerating(false)
     }

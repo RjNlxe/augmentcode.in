@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Code, Copy, X, Grid, List, BookOpen, Zap, Tag, Eye, FileDown, Menu, Sparkles, Layers, ChevronRight } from 'lucide-react'
+import { Search, Code, Copy, X, Grid, List, BookOpen, Zap, Tag, Eye, FileDown, Menu, Sparkles, Layers, ChevronRight, Filter } from 'lucide-react'
 import { getAllRules, getLanguages, getCategories, type Rule } from '@/lib/rules-loader'
 
 
@@ -201,8 +201,7 @@ ${rule.content}
                               ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-lg'
                               : 'text-gray-400 hover:text-white hover:bg-white/10'
                           }`}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+
                         >
                           <span className="font-medium">{language}</span>
                           <span className={`text-xs px-2 py-1 rounded-full ${
@@ -262,8 +261,7 @@ ${rule.content}
                               ? 'bg-green-500/20 text-green-400 border border-green-500/30 shadow-lg'
                               : 'text-gray-400 hover:text-white hover:bg-white/10'
                           }`}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
+
                         >
                           <span className="font-medium">{category}</span>
                           <span className={`text-xs px-2 py-1 rounded-full ${
@@ -347,8 +345,7 @@ ${rule.content}
             <motion.button
               onClick={() => setSidebarOpen(true)}
               className="flex items-center space-x-2 bg-emerald-500/20 border border-emerald-500/30 rounded-xl px-4 py-3 text-emerald-400 hover:bg-emerald-500/30 transition-all duration-200 shadow-lg"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+
             >
               <Menu className="w-5 h-5" />
               <span className="font-medium">Browse by Language & Category</span>
@@ -400,7 +397,7 @@ ${rule.content}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
-                  whileHover={{ scale: 1.05, y: -2 }}
+
                 >
                   <div className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
                     {stat.value}
@@ -449,8 +446,7 @@ ${rule.content}
                       className={`p-2 rounded-lg transition-all duration-200 ${
                         viewMode === 'grid' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'
                       }`}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+
                     >
                       <Grid className="w-4 h-4" />
                     </motion.button>
@@ -459,8 +455,7 @@ ${rule.content}
                       className={`p-2 rounded-lg transition-all duration-200 ${
                         viewMode === 'list' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'
                       }`}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+
                     >
                       <List className="w-4 h-4" />
                     </motion.button>
@@ -525,8 +520,7 @@ ${rule.content}
                     setSelectedCategory('All')
                   }}
                   className="text-gray-400 hover:text-white text-sm px-3 py-2 rounded-full border border-gray-600 hover:border-emerald-500 transition-all duration-200"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+
                 >
                   Clear All
                 </motion.button>
@@ -571,9 +565,9 @@ ${rule.content}
               "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" :
               "space-y-4"
             }
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.8 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
           >
             {!isClient ? (
               // Server-side placeholder to prevent hydration mismatch
@@ -592,30 +586,17 @@ ${rule.content}
                 <motion.div
                   key={rule.id}
                   layout
-                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -30, scale: 0.95 }}
-                  transition={{
-                    delay: index * 0.03,
-                    duration: 0.4,
-                    ease: "easeOut"
-                  }}
-                  className={`group relative overflow-hidden ${
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className={`group relative overflow-hidden cursor-pointer ${
                     viewMode === 'grid'
-                      ? 'glass-effect p-6 rounded-2xl border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-500 h-fit'
-                      : 'glass-effect p-4 rounded-xl border border-emerald-500/20 hover:border-emerald-500/40 transition-all duration-500 flex items-center space-x-4'
+                      ? 'glass-effect p-6 rounded-2xl border border-emerald-500/20 hover:border-emerald-500/40 transition-colors duration-200 h-fit'
+                      : 'glass-effect p-4 rounded-xl border border-emerald-500/20 hover:border-emerald-500/40 transition-colors duration-200 flex items-center space-x-4'
                   }`}
-                  whileHover={{
-                    y: -4,
-                    scale: 1.02,
-                    transition: { duration: 0.2, ease: "easeOut" }
-                  }}
-                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setSelectedRule(rule)}
                 >
-                  {/* Hover Glow Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/5 to-green-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
-
-                  <div className="relative z-10" onClick={() => setSelectedRule(rule)}>
                     {viewMode === 'grid' ? (
                       // Grid View
                       <>
@@ -677,8 +658,7 @@ ${rule.content}
                                 downloadRule(rule)
                               }}
                               className="flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 transition-colors p-2 rounded-lg hover:bg-emerald-500/10"
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
+
                             >
                               <FileDown className="w-4 h-4" />
                               <span>Download</span>
@@ -729,8 +709,7 @@ ${rule.content}
                               downloadRule(rule)
                             }}
                             className="flex items-center space-x-1 text-emerald-400 hover:text-emerald-300 transition-colors p-2 rounded-lg hover:bg-emerald-500/10"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
+
                           >
                             <FileDown className="w-4 h-4" />
                           </motion.button>
@@ -882,8 +861,7 @@ ${rule.content}
                         downloadRule(selectedRule)
                       }}
                       className="flex items-center space-x-2 bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-lg text-white transition-colors"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+
                     >
                       <FileDown className="w-4 h-4" />
                       <span>Download</span>
@@ -948,8 +926,7 @@ ${rule.content}
                         copyToClipboard(selectedRule.content, selectedRule.id)
                       }}
                       className="flex items-center space-x-2 bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-lg text-white transition-colors"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+
                     >
                       {copiedId === selectedRule.id ? (
                         <>

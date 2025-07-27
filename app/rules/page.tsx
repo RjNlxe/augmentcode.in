@@ -109,9 +109,7 @@ ${rule.content}
     <main className="min-h-screen bg-dark-950 text-white flex">
       {/* Sidebar */}
       <motion.div
-        className={`fixed inset-y-0 left-0 z-50 w-80 bg-gradient-to-b from-dark-900 to-dark-950 border-r border-emerald-500/20 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 w-80 bg-gradient-to-b from-dark-900 to-dark-950 border-r border-emerald-500/20 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
         initial={{ x: -320 }}
         animate={{ x: sidebarOpen ? 0 : -320 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -803,6 +801,7 @@ ${rule.content}
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </main>
   )
 }

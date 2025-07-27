@@ -222,10 +222,12 @@ function convertRule(rule: any, index: number): Rule {
   const language = extractLanguage(rule.tags || [], rule.slug || '')
   const category = extractCategory(rule.tags || [], rule.libs || [], rule.slug || '')
 
-  // Generate consistent rating and downloads based on rule content (deterministic)
-  const titleHash = rule.title ? rule.title.split('').reduce((a, b) => a + b.charCodeAt(0), 0) : 0
-  const contentHash = rule.content ? rule.content.length : 0
-  const combinedHash = titleHash + contentHash + index
+  // Static ratings to prevent hydration issues
+  const staticRatings = [4.8, 4.5, 4.9, 4.3, 4.7, 4.6, 4.4, 4.8, 4.5, 4.9]
+  const staticDownloads = [15420, 8930, 22150, 5670, 18340, 12890, 7450, 19230, 11560, 25780]
+
+  const ratingIndex = index % staticRatings.length
+  const downloadIndex = index % staticDownloads.length
 
   return {
     id: `${rule.slug || 'rule'}-${index}`,
@@ -237,8 +239,8 @@ function convertRule(rule: any, index: number): Rule {
     libs: rule.libs || [],
     slug: rule.slug || '',
     content: rule.content || '',
-    rating: 4.0 + ((combinedHash % 10) / 10), // Deterministic rating between 4.0-5.0
-    downloads: 1000 + ((combinedHash % 19000)) // Deterministic downloads between 1000-20000
+    rating: staticRatings[ratingIndex],
+    downloads: staticDownloads[downloadIndex]
   }
 }
 

@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Filter, Code, Star, Download, Copy, ChevronDown, X, Grid, List, BookOpen, Zap, Tag, Eye, FileDown } from 'lucide-react'
+import { Search, Filter, Code, Star, Download, Copy, ChevronDown, X, Grid, List, BookOpen, Zap, Tag, Eye, FileDown, Menu, Sparkles, Layers } from 'lucide-react'
 import { getAllRules, getLanguages, getCategories, type Rule } from '@/lib/rules-loader'
 
 
@@ -10,12 +10,24 @@ export default function RulesPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedLanguage, setSelectedLanguage] = useState('All')
   const [selectedCategory, setSelectedCategory] = useState('All')
-  const [isLanguageOpen, setIsLanguageOpen] = useState(false)
-  const [isCategoryOpen, setIsCategoryOpen] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedRule, setSelectedRule] = useState<Rule | null>(null)
   const [sortBy, setSortBy] = useState<'name' | 'rating' | 'downloads'>('name')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // Modal scroll lock effect
+  useEffect(() => {
+    if (selectedRule) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [selectedRule])
 
   // Load actual rules from your directory
   const allRules = getAllRules()
@@ -94,9 +106,107 @@ ${rule.content}
   }
 
   return (
-    <main className="min-h-screen bg-dark-950 text-white">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-emerald-900/20 via-dark-900 to-green-900/20 py-12 px-6 md:px-8 relative overflow-hidden">
+    <main className="min-h-screen bg-dark-950 text-white flex">
+      {/* Sidebar */}
+      <motion.div
+        className={`fixed inset-y-0 left-0 z-50 w-80 bg-gradient-to-b from-dark-900 to-dark-950 border-r border-emerald-500/20 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+        initial={{ x: -320 }}
+        animate={{ x: sidebarOpen ? 0 : -320 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
+        <div className="flex flex-col h-full">
+          {/* Sidebar Header */}
+          <div className="p-6 border-b border-emerald-500/20">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-500 rounded-xl flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white">Rules Hub</h2>
+                  <p className="text-xs text-gray-400">{allRules.length} rules available</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden p-2 rounded-lg hover:bg-white/5 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Filters */}
+          <div className="p-6 space-y-6 flex-1 overflow-y-auto">
+            {/* Languages */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center">
+                <Code className="w-4 h-4 mr-2 text-emerald-400" />
+                Languages
+              </h3>
+              <div className="space-y-2">
+                {languages.map((language) => (
+                  <button
+                    key={language}
+                    onClick={() => setSelectedLanguage(language)}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
+                      selectedLanguage === language
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    {language}
+                    <span className="float-right text-xs opacity-60">
+                      {language === 'All' ? allRules.length : allRules.filter(r => r.language === language).length}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Categories */}
+            <div>
+              <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center">
+                <Layers className="w-4 h-4 mr-2 text-green-400" />
+                Categories
+              </h3>
+              <div className="space-y-2">
+                {categories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
+                      selectedCategory === category
+                        ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                        : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    }`}
+                  >
+                    {category}
+                    <span className="float-right text-xs opacity-60">
+                      {category === 'All' ? allRules.length : allRules.filter(r => r.category === category).length}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Main Content */}
+      <div className="flex-1 lg:ml-0">
+        {/* Header */}
+        <div className="bg-gradient-to-br from-emerald-900/20 via-dark-900 to-green-900/20 py-8 px-6 md:px-8 relative overflow-hidden">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 bg-emerald-500 rounded-full blur-3xl animate-pulse"></div>
@@ -105,6 +215,17 @@ ${rule.content}
         </div>
 
         <div className="max-w-7xl mx-auto relative z-10">
+          {/* Mobile Menu Button */}
+          <div className="flex justify-between items-center mb-6 lg:hidden">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="flex items-center space-x-2 bg-emerald-500/20 border border-emerald-500/30 rounded-xl px-4 py-2 text-emerald-400 hover:bg-emerald-500/30 transition-colors"
+            >
+              <Menu className="w-5 h-5" />
+              <span>Filters</span>
+            </button>
+          </div>
+
           <motion.div
             className="text-center"
             initial={{ opacity: 0, y: 30 }}
@@ -163,196 +284,140 @@ ${rule.content}
         </div>
       </div>
 
-      {/* Search and Filters */}
-      <div className="py-8 px-6 md:px-8 bg-gradient-to-r from-emerald-900/10 to-green-900/10">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
-          >
-            {/* Main Search Bar */}
+        {/* Search and Controls */}
+        <div className="py-6 px-6 md:px-8 bg-gradient-to-r from-emerald-900/10 to-green-900/10 border-b border-emerald-500/10">
+          <div className="max-w-7xl mx-auto">
             <motion.div
-              className="relative max-w-4xl mx-auto mb-6"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1, duration: 0.6 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.8, ease: "easeOut" }}
             >
-              <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-emerald-400 w-6 h-6" />
-              <input
-                type="text"
-                placeholder="Search by rule name, description, tags, or libraries... (e.g., 'React', 'Python', 'API')"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-16 pr-6 py-5 bg-white/5 border border-emerald-500/30 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-lg backdrop-blur-sm transition-all duration-300"
-              />
-            </motion.div>
-
-            {/* Filters and Controls */}
-            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-              <div className="flex flex-wrap gap-3 items-center">
-                {/* Language Filter */}
-                <div className="relative">
-                  <motion.button
-                    onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                    className="flex items-center space-x-2 bg-white/5 border border-emerald-500/30 rounded-xl px-4 py-3 text-white hover:border-emerald-500 transition-colors min-w-[140px] justify-between backdrop-blur-sm"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <span className="flex items-center space-x-2">
-                      <Code className="w-4 h-4 text-emerald-400" />
-                      <span>{selectedLanguage}</span>
-                    </span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${isLanguageOpen ? 'rotate-180' : ''}`} />
-                  </motion.button>
-
-                  <AnimatePresence>
-                    {isLanguageOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute top-full mt-2 w-full bg-dark-900 border border-gray-600 rounded-xl shadow-xl z-20 max-h-60 overflow-y-auto backdrop-blur-sm"
-                      >
-                        {languages.map((language) => (
-                          <button
-                            key={language}
-                            onClick={() => {
-                              setSelectedLanguage(language)
-                              setIsLanguageOpen(false)
-                            }}
-                            className={`w-full text-left px-4 py-3 hover:bg-emerald-500/20 transition-colors ${
-                              selectedLanguage === language ? 'bg-emerald-500/30 text-emerald-400' : 'text-gray-300'
-                            }`}
-                          >
-                            {language}
-                          </button>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Category Filter */}
-                <div className="relative">
-                  <button
-                    onClick={() => setIsCategoryOpen(!isCategoryOpen)}
-                    className="flex items-center space-x-2 bg-white/5 border border-gray-600 rounded-xl px-4 py-3 text-white hover:border-primary-500 transition-colors min-w-[140px] justify-between backdrop-blur-sm"
-                  >
-                    <span className="flex items-center space-x-2">
-                      <Filter className="w-4 h-4" />
-                      <span>{selectedCategory}</span>
-                    </span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} />
-                  </button>
-
-                  <AnimatePresence>
-                    {isCategoryOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute top-full mt-2 w-full bg-dark-900 border border-gray-600 rounded-xl shadow-xl z-20 max-h-60 overflow-y-auto backdrop-blur-sm"
-                      >
-                        {categories.map((category) => (
-                          <button
-                            key={category}
-                            onClick={() => {
-                              setSelectedCategory(category)
-                              setIsCategoryOpen(false)
-                            }}
-                            className={`w-full text-left px-4 py-3 hover:bg-primary-500/20 transition-colors ${
-                              selectedCategory === category ? 'bg-primary-500/30 text-primary-400' : 'text-gray-300'
-                            }`}
-                          >
-                            {category}
-                          </button>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* Sort Filter */}
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as 'name' | 'rating' | 'downloads')}
-                  className="bg-white/5 border border-gray-600 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary-500 backdrop-blur-sm"
+              {/* Search Bar and Controls */}
+              <div className="flex flex-col lg:flex-row gap-4 items-center">
+                {/* Search Bar */}
+                <motion.div
+                  className="relative flex-1 max-w-2xl"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 1, duration: 0.6 }}
                 >
-                  <option value="name" className="bg-dark-900">Name A-Z</option>
-                  <option value="rating" className="bg-dark-900">Highest Rated</option>
-                  <option value="downloads" className="bg-dark-900">Most Popular</option>
-                </select>
-              </div>
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Search rules, tags, libraries..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 bg-white/5 border border-emerald-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 backdrop-blur-sm transition-all duration-300"
+                  />
+                </motion.div>
 
-              {/* View Controls */}
-              <div className="flex items-center space-x-3">
-                <div className="flex bg-white/5 rounded-xl p-1 border border-gray-600">
-                  <button
-                    onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded-lg transition-colors ${
-                      viewMode === 'grid' ? 'bg-primary-500 text-white' : 'text-gray-400 hover:text-white'
-                    }`}
+                {/* Controls */}
+                <div className="flex items-center gap-3">
+                  {/* Sort Control */}
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as 'name' | 'rating' | 'downloads')}
+                    className="bg-white/5 border border-emerald-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 backdrop-blur-sm"
                   >
-                    <Grid className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => setViewMode('list')}
-                    className={`p-2 rounded-lg transition-colors ${
-                      viewMode === 'list' ? 'bg-primary-500 text-white' : 'text-gray-400 hover:text-white'
-                    }`}
-                  >
-                    <List className="w-4 h-4" />
-                  </button>
+                    <option value="name" className="bg-dark-900">Name A-Z</option>
+                    <option value="rating" className="bg-dark-900">Highest Rated</option>
+                    <option value="downloads" className="bg-dark-900">Most Popular</option>
+                  </select>
+
+                  {/* View Controls */}
+                  <div className="flex bg-white/5 rounded-xl p-1 border border-emerald-500/30">
+                    <motion.button
+                      onClick={() => setViewMode('grid')}
+                      className={`p-2 rounded-lg transition-all duration-200 ${
+                        viewMode === 'grid' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Grid className="w-4 h-4" />
+                    </motion.button>
+                    <motion.button
+                      onClick={() => setViewMode('list')}
+                      className={`p-2 rounded-lg transition-all duration-200 ${
+                        viewMode === 'list' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <List className="w-4 h-4" />
+                    </motion.button>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Active Filters */}
             {(selectedLanguage !== 'All' || selectedCategory !== 'All' || searchQuery) && (
-              <div className="flex flex-wrap gap-2 mt-4">
+              <motion.div
+                className="flex flex-wrap gap-2 mt-4"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
                 {searchQuery && (
-                  <span className="inline-flex items-center space-x-2 bg-blue-500/20 text-blue-400 px-3 py-2 rounded-full text-sm">
+                  <motion.span
+                    className="inline-flex items-center space-x-2 bg-emerald-500/20 text-emerald-400 px-3 py-2 rounded-full text-sm border border-emerald-500/30"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                  >
                     <Search className="w-3 h-3" />
                     <span>"{searchQuery}"</span>
-                    <button onClick={() => setSearchQuery('')}>
+                    <button onClick={() => setSearchQuery('')} className="hover:text-emerald-300">
                       <X className="w-3 h-3" />
                     </button>
-                  </span>
+                  </motion.span>
                 )}
                 {selectedLanguage !== 'All' && (
-                  <span className="inline-flex items-center space-x-2 bg-primary-500/20 text-primary-400 px-3 py-2 rounded-full text-sm">
+                  <motion.span
+                    className="inline-flex items-center space-x-2 bg-green-500/20 text-green-400 px-3 py-2 rounded-full text-sm border border-green-500/30"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                  >
                     <Code className="w-3 h-3" />
                     <span>{selectedLanguage}</span>
-                    <button onClick={() => setSelectedLanguage('All')}>
+                    <button onClick={() => setSelectedLanguage('All')} className="hover:text-green-300">
                       <X className="w-3 h-3" />
                     </button>
-                  </span>
+                  </motion.span>
                 )}
                 {selectedCategory !== 'All' && (
-                  <span className="inline-flex items-center space-x-2 bg-accent-500/20 text-accent-400 px-3 py-2 rounded-full text-sm">
+                  <motion.span
+                    className="inline-flex items-center space-x-2 bg-teal-500/20 text-teal-400 px-3 py-2 rounded-full text-sm border border-teal-500/30"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    exit={{ scale: 0 }}
+                  >
                     <Filter className="w-3 h-3" />
                     <span>{selectedCategory}</span>
-                    <button onClick={() => setSelectedCategory('All')}>
+                    <button onClick={() => setSelectedCategory('All')} className="hover:text-teal-300">
                       <X className="w-3 h-3" />
                     </button>
-                  </span>
+                  </motion.span>
                 )}
-                <button
+                <motion.button
                   onClick={() => {
                     setSearchQuery('')
                     setSelectedLanguage('All')
                     setSelectedCategory('All')
                   }}
-                  className="text-gray-400 hover:text-white text-sm px-3 py-2 rounded-full border border-gray-600 hover:border-gray-500 transition-colors"
+                  className="text-gray-400 hover:text-white text-sm px-3 py-2 rounded-full border border-gray-600 hover:border-emerald-500 transition-all duration-200"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
                   Clear All
-                </button>
-              </div>
+                </motion.button>
+              </motion.div>
             )}
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
-      </div>
 
       {/* Results Section */}
       <div className="py-8 px-6 md:px-8">

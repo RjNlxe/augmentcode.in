@@ -1,286 +1,274 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import { Zap, Code, Database, Cloud, Shield, ArrowRight, CheckCircle, ExternalLink } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { ArrowRight, Users, Clock, Sparkles, Code, Brain, Rocket, Server } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function MCPPage() {
-  const features = [
-    {
-      icon: <Zap className="w-8 h-8" />,
-      title: "Lightning Fast",
-      description: "Optimized protocol for real-time AI model communication"
-    },
-    {
-      icon: <Shield className="w-8 h-8" />,
-      title: "Secure & Reliable",
-      description: "Enterprise-grade security with robust error handling"
-    },
-    {
-      icon: <Database className="w-8 h-8" />,
-      title: "Context Aware",
-      description: "Maintains conversation context across multiple interactions"
-    },
-    {
-      icon: <Cloud className="w-8 h-8" />,
-      title: "Cloud Native",
-      description: "Built for modern cloud infrastructure and scaling"
-    }
-  ]
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
-  const integrations = [
-    {
-      name: "OpenAI GPT-4",
-      status: "Active",
-      description: "Full integration with OpenAI's latest models"
-    },
-    {
-      name: "Anthropic Claude",
-      status: "Active", 
-      description: "Seamless Claude integration for enhanced reasoning"
-    },
-    {
-      name: "Google Gemini",
-      status: "Beta",
-      description: "Early access to Google's multimodal AI"
-    },
-    {
-      name: "Local Models",
-      status: "Coming Soon",
-      description: "Support for locally hosted AI models"
+  // Mouse tracking for interactive background
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
     }
-  ]
+
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
 
   return (
-    <main className="min-h-screen bg-dark-950 text-white">
-      {/* Hero Section */}
-      <section className="relative py-20 px-6 md:px-8">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              <span className="gradient-text">MCP Integration</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-4xl mx-auto">
-              Model Context Protocol - The future of AI model communication.
-              Seamlessly connect with multiple AI providers through a unified interface.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button className="group inline-flex items-center space-x-2 bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-400 hover:to-accent-400 px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 glow-effect">
-                <span>Get Started</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-              </button>
-
-              <Link
-                href="/generate"
-                className="group inline-flex items-center space-x-2 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 glow-effect"
-              >
-                <span>Generate</span>
-                <Zap className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-              </Link>
-
-              <Link
-                href="https://github.com/modelcontextprotocol/specification"
-                target="_blank"
-                className="group inline-flex items-center space-x-2 glass-effect hover:bg-white/10 px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 border border-primary-500/30"
-              >
-                <span>View Specification</span>
-                <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-              </Link>
+    <div className="min-h-screen bg-black overflow-hidden font-space">
+      {/* Header */}
+      <header className="relative z-20 border-b border-emerald-500/20 p-6">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="w-10 h-10 rounded-2xl overflow-hidden pulse-emerald">
+              <Image
+                src="/image.png"
+                alt="Augment Code Logo"
+                width={40}
+                height={40}
+                className="w-full h-full object-cover logo-visible"
+                priority
+              />
             </div>
-          </motion.div>
+            <span className="text-2xl font-black visible-text font-code tracking-wider text-shadow-emerald">
+              augmentcode
+            </span>
+          </Link>
+
+          <nav className="flex items-center space-x-6">
+            <Link href="/rules" className="text-zinc-400 hover:text-emerald-400 transition-colors font-space">Rules</Link>
+            <Link href="/generate" className="text-zinc-400 hover:text-emerald-400 transition-colors font-space">Generate</Link>
+            <a
+              href="https://augment.community"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-emerald text-sm"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Community
+            </a>
+          </nav>
         </div>
-      </section>
+      </header>
 
-      {/* Features Grid */}
-      <section className="py-20 px-6 md:px-8">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">
-              Why MCP?
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              The Model Context Protocol revolutionizes how AI models communicate and share context
-            </p>
-          </motion.div>
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        {/* Subtle emerald geometric patterns */}
+        <div className="absolute inset-0 opacity-[0.015]" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgb(34, 197, 94) 1px, transparent 0)`,
+          backgroundSize: '60px 60px'
+        }} />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                className="glass-effect p-8 rounded-2xl text-center group hover:bg-white/10 transition-all duration-300"
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + index * 0.1, duration: 0.8 }}
-                whileHover={{ y: -5, scale: 1.02 }}
-              >
-                <div className="text-primary-400 mb-4 group-hover:text-primary-300 transition-colors">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-white">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-400">
-                  {feature.description}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+        {/* Enhanced floating geometric shapes */}
+        <div
+          className="absolute w-96 h-96 border border-emerald-500/10 rounded-full animate-float glow-effect opacity-20"
+          style={{
+            left: `${10 + mousePosition.x * 0.008}%`,
+            top: `${10 + mousePosition.y * 0.008}%`,
+            animationDelay: '0s'
+          }}
+        />
+        <div
+          className="absolute w-64 h-64 border border-emerald-400/8 rounded-full animate-float opacity-15"
+          style={{
+            right: `${15 + mousePosition.x * 0.006}%`,
+            bottom: `${15 + mousePosition.y * 0.006}%`,
+            animationDelay: '3s'
+          }}
+        />
+        <div
+          className="absolute w-32 h-32 bg-emerald-500/5 rounded-full blur-xl animate-pulse"
+          style={{
+            left: `${50 + mousePosition.x * 0.004}%`,
+            top: `${30 + mousePosition.y * 0.004}%`,
+          }}
+        />
 
-      {/* Integration Status */}
-      <section className="py-20 px-6 md:px-8 bg-dark-900/50">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.8 }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">
-              AI Model Integrations
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Connect with the world's leading AI models through our unified MCP interface
-            </p>
-          </motion.div>
+        {/* Additional ambient orbs */}
+        <div
+          className="absolute w-48 h-48 bg-emerald-400/3 rounded-full blur-2xl animate-float"
+          style={{
+            right: `${30 + mousePosition.x * 0.003}%`,
+            top: `${20 + mousePosition.y * 0.003}%`,
+            animationDelay: '1.5s'
+          }}
+        />
+      </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {integrations.map((integration, index) => (
-              <motion.div
-                key={index}
-                className="glass-effect p-6 rounded-2xl"
-                initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.0 + index * 0.1, duration: 0.8 }}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-semibold text-white">{integration.name}</h3>
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                    integration.status === 'Active' 
-                      ? 'bg-green-500/20 text-green-400'
-                      : integration.status === 'Beta'
-                      ? 'bg-yellow-500/20 text-yellow-400'
-                      : 'bg-gray-500/20 text-gray-400'
-                  }`}>
-                    {integration.status}
-                  </span>
-                </div>
-                <p className="text-gray-400">{integration.description}</p>
-                
-                {integration.status === 'Active' && (
-                  <div className="flex items-center space-x-2 mt-4 text-green-400">
-                    <CheckCircle className="w-4 h-4" />
-                    <span className="text-sm">Ready to use</span>
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Code Example */}
-      <section className="py-20 px-6 md:px-8">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.8 }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">
-              Simple Integration
-            </h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Get started with MCP in just a few lines of code
-            </p>
-          </motion.div>
-
-          <motion.div
-            className="max-w-4xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.4, duration: 0.8 }}
-          >
-            <div className="glass-effect p-8 rounded-2xl">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-white">MCP Client Example</h3>
-                <button className="text-primary-400 hover:text-primary-300 transition-colors">
-                  <Code className="w-5 h-5" />
-                </button>
-              </div>
-              
-              <pre className="bg-dark-900 p-6 rounded-lg text-sm text-gray-300 overflow-x-auto">
-                <code>{`import { MCPClient } from '@augmentcode/mcp'
-
-// Initialize MCP client
-const client = new MCPClient({
-  provider: 'openai',
-  apiKey: process.env.OPENAI_API_KEY
-})
-
-// Send a message with context
-const response = await client.chat({
-  message: "Help me optimize this code",
-  context: {
-    language: "javascript",
-    codebase: "./src",
-    rules: ["performance", "readability"]
-  }
-})
-
-console.log(response.message)
-// AI response with full context awareness`}</code>
-              </pre>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-6 md:px-8 bg-gradient-to-r from-primary-500/10 to-accent-500/10">
+      {/* Main Content */}
+      <main className="relative z-10 flex-1 flex items-center justify-center px-6 md:px-8 py-20">
         <div className="max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.6, duration: 0.8 }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 gradient-text">
-              Ready to Get Started?
-            </h2>
-            <p className="text-xl text-gray-300 mb-8">
-              Join thousands of developers already using MCP to enhance their AI workflows
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button className="group inline-flex items-center space-x-2 bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-400 hover:to-accent-400 px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 glow-effect">
-                <span>Start Building</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-              </button>
-              
-              <Link
-                href="/rules"
-                className="group inline-flex items-center space-x-2 glass-effect hover:bg-white/10 px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 border border-primary-500/30"
-              >
-                <span>Browse Rules</span>
-                <Code className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-              </Link>
+          {/* Coming Soon Container */}
+          <div className="relative">
+            {/* Hero Background with subtle emerald glow */}
+            <div className="hero-mono" />
+
+            {/* Content */}
+            <div className="relative p-12 md:p-16 space-y-12">
+              {/* Icon */}
+              <div className="flex justify-center mb-8">
+                <div className="relative">
+                  <div className="w-32 h-32 bg-gradient-to-br from-emerald-500/20 via-cyan-500/20 to-purple-500/20 rounded-full flex items-center justify-center animate-pulse">
+                    <div className="w-24 h-24 bg-gradient-to-br from-emerald-400 to-purple-500 rounded-full flex items-center justify-center">
+                      <Server className="w-12 h-12 text-white" />
+                    </div>
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center animate-bounce">
+                    <Sparkles className="w-5 h-5 text-white" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Main Heading */}
+              <div className="space-y-8 animate-fade-in">
+                <div className="space-y-6">
+                  <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-tight tracking-tight font-space">
+                    <span className="inline-block visible-text animate-slide-up text-shadow-lg">
+                      Best MCP Servers
+                    </span>
+                    <br />
+                    <span className="inline-block gradient-text force-visible animate-slide-up shimmer">
+                      Coming Soon
+                    </span>
+                  </h1>
+
+                  <p className="text-xl md:text-2xl text-zinc-300 max-w-3xl mx-auto leading-relaxed font-light animate-fade-in-delay font-space">
+                    We are bringing the best MCP servers to the community.
+                    Get ready for powerful Model Context Protocol integrations and enhanced AI workflows.
+                  </p>
+                </div>
+
+                {/* Features Preview */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 animate-fade-in-delay-2">
+                  <div className="card-emerald text-center">
+                    <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                      <Server className="w-6 h-6 text-emerald-400" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-2">Curated Servers</h3>
+                    <p className="text-sm text-zinc-400">Hand-picked MCP servers for optimal performance</p>
+                  </div>
+
+                  <div className="card-emerald text-center">
+                    <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                      <Users className="w-6 h-6 text-emerald-400" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-2">Community Driven</h3>
+                    <p className="text-sm text-zinc-400">Built by developers, for developers</p>
+                  </div>
+
+                  <div className="card-emerald text-center">
+                    <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                      <Rocket className="w-6 h-6 text-emerald-400" />
+                    </div>
+                    <h3 className="text-lg font-bold text-white mb-2">Production Ready</h3>
+                    <p className="text-sm text-zinc-400">Enterprise-grade MCP server solutions</p>
+                  </div>
+                </div>
+
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8 animate-fade-in-delay-3">
+                  <Link
+                    href="/rules"
+                    className="group relative inline-flex items-center space-x-3 btn-emerald"
+                  >
+                    <Code className="w-5 h-5" />
+                    <span className="text-lg font-space">Explore Rules</span>
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </Link>
+
+                  <Link
+                    href="/generate"
+                    className="group inline-flex items-center space-x-3 btn-mono-outline"
+                  >
+                    <Brain className="w-5 h-5" />
+                    <span className="text-lg font-space">Generate PRD</span>
+                  </Link>
+                </div>
+
+                {/* Notify Section */}
+                <div className="mt-12 p-6 bg-emerald-950/30 border border-emerald-500/20 rounded-2xl animate-fade-in-delay-3">
+                  <div className="flex items-center justify-center space-x-3 mb-4">
+                    <Clock className="w-5 h-5 text-emerald-400" />
+                    <span className="text-emerald-400 font-semibold">Stay Updated</span>
+                  </div>
+                  <p className="text-zinc-300 text-sm mb-4">
+                    Be the first to know when our curated MCP servers launch
+                  </p>
+                  <a
+                    href="https://augment.community"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+                  >
+                    <Users className="w-4 h-4" />
+                    <span>Join Community</span>
+                  </a>
+                </div>
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
-      </section>
-    </main>
+      </main>
+
+      {/* Footer */}
+      <footer className="relative z-10 p-8 border-t border-emerald-500/20">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-zinc-400 text-lg flex items-center justify-center space-x-2 font-space">
+            <span>© 2025 augmentcode.in. Best MCP servers</span>
+            <Clock className="w-5 h-5 text-emerald-400 animate-pulse" />
+            <span>coming soon.</span>
+          </p>
+        </div>
+      </footer>
+
+      {/* Enhanced CSS Animations */}
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fadeInUp 1.2s ease-out;
+        }
+
+        .animate-fade-in-delay {
+          animation: fadeInUp 1.2s ease-out 0.3s both;
+        }
+
+        .animate-fade-in-delay-2 {
+          animation: fadeInUp 1.2s ease-out 0.6s both;
+        }
+
+        .animate-fade-in-delay-3 {
+          animation: fadeInUp 1.2s ease-out 0.9s both;
+        }
+
+        .animate-slide-up {
+          animation: slideUp 1.4s ease-out 0.2s both;
+        }
+
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(60px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+    </div>
   )
 }

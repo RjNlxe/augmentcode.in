@@ -36,7 +36,7 @@ export default function HomePage() {
   ]
 
   return (
-    <main className="min-h-screen bg-dark-950 text-white">
+    <main className="min-h-screen bg-black text-white font-space">
       {/* Hero Section */}
       <section className="relative py-20 px-6 md:px-8">
         <div className="max-w-7xl mx-auto text-center">
@@ -45,8 +45,8 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1 className="text-5xl md:text-7xl font-bold mb-6">
-              <span className="gradient-text">Augment Code</span>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 font-space">
+              <span className="gradient-text shimmer">Augment Code</span>
               <br />
               <span className="text-white">Community Platform</span>
             </h1>

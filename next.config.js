@@ -9,6 +9,55 @@ const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
 
+  // Optimize for Vercel free tier
+  output: 'standalone',
+
+  // Webpack optimizations for better chunk loading
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      // Optimize chunk splitting for better caching
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          // Bundle all rules together to avoid chunk loading issues
+          rules: {
+            name: 'rules',
+            chunks: 'all',
+            test: /[\\/]rules[\\/]/,
+            priority: 40,
+            enforce: true,
+          },
+          // Bundle components together
+          components: {
+            name: 'components',
+            chunks: 'all',
+            test: /[\\/]components[\\/]/,
+            priority: 30,
+            enforce: true,
+          },
+          // Bundle lib together
+          lib: {
+            name: 'lib',
+            chunks: 'all',
+            test: /[\\/]lib[\\/]/,
+            priority: 20,
+            enforce: true,
+          },
+          // Common vendor chunks
+          vendor: {
+            name: 'vendor',
+            chunks: 'all',
+            test: /[\\/]node_modules[\\/]/,
+            priority: 10,
+          },
+        },
+      }
+    }
+    return config
+  },
+
   // SEO and Performance Headers
   async headers() {
     return [

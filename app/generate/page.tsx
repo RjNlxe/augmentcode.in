@@ -1,262 +1,517 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { Upload, FileText, Package, Code, Download, Sparkles, CheckCircle, AlertCircle, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { FileText, Download, Brain, Wand2, Users, Code, Target, Shield, Rocket, Settings, BookOpen, CheckCircle, ArrowRight, RefreshCw, X } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
+
+interface FormData {
+  projectName: string
+  projectDescription: string
+  targetAudience: string
+  businessGoals: string
+  primaryLanguage: string
+  techStack: string[]
+  projectType: string
+  timeline: string
+  teamSize: string
+  budget: string
+  specificRequirements: string
+}
 
 export default function GeneratePage() {
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
-  const [isGenerating, setIsGenerating] = useState(false)
-  const [generatedFiles, setGeneratedFiles] = useState<string[]>([])
-  const [dragActive, setDragActive] = useState(false)
+  const [formData, setFormData] = useState<FormData>({
+    projectName: '',
+    projectDescription: '',
+    targetAudience: '',
+    businessGoals: '',
+    primaryLanguage: 'JavaScript',
+    techStack: [],
+    projectType: 'Web Application',
+    timeline: '3-6 months',
+    teamSize: '2-5 developers',
+    budget: 'Medium ($10k-$50k)',
+    specificRequirements: ''
+  })
 
-  const supportedFiles = [
-    { name: '.augmentrules', icon: <Sparkles className="w-5 h-5" />, desc: 'Augment configuration files' },
-    { name: 'package.json', icon: <Package className="w-5 h-5" />, desc: 'Node.js project dependencies' },
-    { name: 'requirements.txt', icon: <FileText className="w-5 h-5" />, desc: 'Python project dependencies' },
-    { name: 'Cargo.toml', icon: <Code className="w-5 h-5" />, desc: 'Rust project configuration' },
-    { name: 'pom.xml', icon: <FileText className="w-5 h-5" />, desc: 'Maven project configuration' },
-    { name: 'composer.json', icon: <Package className="w-5 h-5" />, desc: 'PHP project dependencies' }
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [generatedPRD, setGeneratedPRD] = useState('')
+  const [showPreview, setShowPreview] = useState(false)
+
+  // Scroll lock effect when preview is shown
+  useEffect(() => {
+    if (showPreview) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [showPreview])
+
+  const languages = [
+    'JavaScript', 'TypeScript', 'Python', 'React', 'Next.js', 'Vue.js',
+    'Angular', 'Django', 'FastAPI', 'Node.js', 'Rust', 'Go', 'Java',
+    'C++', 'Swift', 'Flutter', 'React Native', 'PHP', 'Ruby', 'C#'
   ]
 
-  const handleDrag = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true)
-    } else if (e.type === "dragleave") {
-      setDragActive(false)
-    }
-  }, [])
+  const techStackOptions = [
+    'React', 'Vue.js', 'Angular', 'Next.js', 'Nuxt.js', 'Svelte',
+    'Node.js', 'Express', 'Django', 'FastAPI', 'Flask', 'Laravel',
+    'Spring Boot', 'ASP.NET', 'Ruby on Rails', 'PostgreSQL', 'MySQL',
+    'MongoDB', 'Redis', 'Docker', 'Kubernetes', 'AWS', 'Azure', 'GCP',
+    'Tailwind CSS', 'Bootstrap', 'Material-UI', 'Ant Design', 'GraphQL',
+    'REST API', 'WebSocket', 'JWT', 'OAuth', 'Stripe', 'PayPal'
+  ]
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setDragActive(false)
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const files = Array.from(e.dataTransfer.files)
-      setUploadedFiles(prev => [...prev, ...files])
-    }
-  }, [])
+  const projectTypes = [
+    'Web Application', 'Mobile App', 'Desktop Application', 'API/Backend Service',
+    'E-commerce Platform', 'SaaS Product', 'CMS/Blog', 'Social Platform',
+    'Dashboard/Analytics', 'AI/ML Application', 'Blockchain/Web3', 'Game',
+    'IoT Application', 'Microservices', 'Chrome Extension', 'PWA'
+  ]
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files)
-      setUploadedFiles(prev => [...prev, ...files])
-    }
+  const toggleTechStack = (tech: string) => {
+    setFormData(prev => ({
+      ...prev,
+      techStack: prev.techStack.includes(tech)
+        ? prev.techStack.filter(t => t !== tech)
+        : [...prev.techStack, tech]
+    }))
   }
 
-  const removeFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index))
+  const generateSystemPrompt = () => {
+    return `You are a senior product manager and technical architect. Create a comprehensive Project Requirements Document (PRD) for the following project:
+
+Project Name: ${formData.projectName}
+Project Description: ${formData.projectDescription}
+Target Audience: ${formData.targetAudience}
+Business Goals: ${formData.businessGoals}
+Primary Language: ${formData.primaryLanguage}
+Tech Stack: ${formData.techStack.join(', ')}
+Project Type: ${formData.projectType}
+Timeline: ${formData.timeline}
+Team Size: ${formData.teamSize}
+Budget: ${formData.budget}
+Specific Requirements: ${formData.specificRequirements}
+
+Generate a complete, professional PRD document in markdown format. Include real, actionable content with specific examples and technical details. Structure the document as follows:
+
+# Project Requirements Document: ${formData.projectName}
+
+## 1. Executive Summary
+- Project overview and vision
+- Key objectives and success metrics
+- Target market and user base
+- Expected ROI and business impact
+
+## 2. Project Overview
+- Detailed project description
+- Problem statement and solution
+- Market opportunity and competitive analysis
+- Value proposition
+
+## 3. Target Audience & User Personas
+- Primary and secondary user groups
+- Detailed user personas with demographics
+- User journey mapping
+- Pain points and needs analysis
+
+## 4. Business Requirements
+- Functional requirements with user stories
+- Non-functional requirements (performance, security, scalability)
+- Business rules and constraints
+- Compliance and regulatory requirements
+
+## 5. Technical Architecture
+- System architecture overview
+- Technology stack justification
+- Database design and data flow
+- API specifications and integrations
+- Security architecture
+
+## 6. Feature Specifications
+- Core features with detailed descriptions
+- User stories with acceptance criteria
+- Feature prioritization (MoSCoW method)
+- Wireframes and UI/UX considerations
+
+## 7. Development Guidelines
+- Coding standards and conventions
+- Code review processes
+- Testing strategies (unit, integration, e2e)
+- Documentation requirements
+- Version control workflow
+
+## 8. Project Timeline & Milestones
+- Development phases and sprints
+- Key milestones and deliverables
+- Resource allocation and dependencies
+- Risk assessment and mitigation
+
+## 9. Quality Assurance
+- Testing protocols and procedures
+- Performance benchmarks
+- Security testing requirements
+- User acceptance testing criteria
+
+## 10. Deployment & Operations
+- Deployment strategy and environments
+- CI/CD pipeline configuration
+- Monitoring and logging setup
+- Maintenance and support procedures
+
+## 11. Budget & Resource Planning
+- Development cost breakdown
+- Infrastructure and operational costs
+- Team structure and roles
+- Third-party services and licenses
+
+## 12. Risk Management
+- Technical risks and mitigation strategies
+- Business risks and contingency plans
+- Timeline risks and buffer planning
+- Quality risks and prevention measures
+
+Make this document comprehensive, professional, and immediately actionable. Include specific code examples in ${formData.primaryLanguage} where relevant. Focus on practical implementation details that a development team can follow directly.`
   }
 
-  const generateMDCFiles = async () => {
-    if (uploadedFiles.length === 0) {
-      alert('Please upload at least one project file')
+  const generatePRD = async () => {
+    if (!formData.projectName.trim() || !formData.projectDescription.trim()) {
+      alert('Please provide at least a project name and description')
       return
     }
 
     setIsGenerating(true)
     try {
-      // Simulate file processing
-      await new Promise(resolve => setTimeout(resolve, 3000))
-      
-      // Generate mock .mdc files based on uploaded files
-      const mockFiles = uploadedFiles.map(file => {
-        const baseName = file.name.split('.')[0]
-        return `${baseName}-rules.mdc`
-      })
-      
-      setGeneratedFiles(mockFiles)
+      const systemPrompt = generateSystemPrompt()
+      const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(systemPrompt)}`)
+      const prdContent = await response.text()
+      setGeneratedPRD(prdContent)
+      setShowPreview(true)
     } catch (error) {
-      console.error('Error generating files:', error)
-      alert('Failed to generate .mdc files. Please try again.')
+      console.error('Error generating PRD:', error)
+      alert('Failed to generate PRD. Please try again.')
     } finally {
       setIsGenerating(false)
     }
   }
 
-  const downloadFile = (fileName: string) => {
-    // Mock download functionality
-    const content = `# ${fileName}\n\nGenerated rules for your project.\n\n## Rules\n\n1. Follow best practices\n2. Maintain code quality\n3. Write comprehensive tests\n4. Document your code\n\nGenerated by Augment Code AI`
-    
-    const blob = new Blob([content], { type: 'text/markdown' })
+  const downloadPRD = () => {
+    const blob = new Blob([generatedPRD], { type: 'text/markdown' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = fileName
+    a.download = 'prd.md'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generatedPRD)
+    alert('PRD copied to clipboard!')
+  }
+
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white font-space overflow-hidden">
       {/* Header */}
-      <header className="border-b border-gray-800 p-6">
+      <header className="relative z-20 border-b border-emerald-500/20 p-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-black" />
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="w-10 h-10 rounded-2xl overflow-hidden pulse-emerald">
+              <Image
+                src="/image.png"
+                alt="Augment Code Logo"
+                width={40}
+                height={40}
+                className="w-full h-full object-cover logo-visible"
+                priority
+              />
             </div>
-            <span className="text-xl font-bold">augmentcode</span>
+            <span className="text-2xl font-black visible-text font-code tracking-wider text-shadow-emerald">
+              augmentcode
+            </span>
           </Link>
           
           <nav className="flex items-center space-x-6">
-            <Link href="/rules" className="text-gray-400 hover:text-white transition-colors">Rules</Link>
-            <Link href="/mcp" className="text-gray-400 hover:text-white transition-colors">MCP</Link>
-            <Link href="/home" className="text-gray-400 hover:text-white transition-colors">Platform</Link>
+            <Link href="/rules" className="text-zinc-400 hover:text-emerald-400 transition-colors font-space">Rules</Link>
+            <Link href="/mcp" className="text-zinc-400 hover:text-emerald-400 transition-colors font-space">MCP</Link>
+            <a 
+              href="https://augment.community" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="btn-emerald text-sm"
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Community
+            </a>
           </nav>
         </div>
       </header>
 
+      {/* Animated Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 rounded-full blur-3xl animate-pulse" />
+      </div>
+
       {/* Main Content */}
-      <main className="max-w-6xl mx-auto p-8">
+      <main className="relative z-10 max-w-7xl mx-auto p-8">
         {/* Hero Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-black mb-4">
-            Generate Augment Project Rules
+        <div className="text-center mb-16 pt-12">
+          <h1 className="text-6xl md:text-7xl font-black mb-6 font-space">
+            <span className="visible-text text-shadow-lg">AI-Powered</span>
+            <br />
+            <span className="gradient-text force-visible shimmer">PRD Generator</span>
           </h1>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
-            Generate the new .mdc files for your project by uploading your .augmentrules, package.json, requirements.txt, or other project files.
+          <p className="text-xl text-zinc-300 max-w-3xl mx-auto leading-relaxed font-light">
+            Generate comprehensive Project Requirements Documents with technical specifications,
+            architecture details, and implementation guidelines tailored to your project.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Upload Section */}
-          <div className="space-y-8">
-            {/* File Upload Area */}
-            <div
-              className={`relative border-2 border-dashed rounded-2xl p-12 text-center transition-all duration-300 ${
-                dragActive 
-                  ? 'border-white bg-gray-900' 
-                  : 'border-gray-700 hover:border-gray-600'
-              }`}
-              onDragEnter={handleDrag}
-              onDragLeave={handleDrag}
-              onDragOver={handleDrag}
-              onDrop={handleDrop}
-            >
-              <input
-                type="file"
-                multiple
-                onChange={handleFileInput}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                accept=".augmentrules,.json,.txt,.toml,.xml"
-              />
-              
-              <div className="space-y-4">
-                <div className="w-16 h-16 bg-gray-800 rounded-2xl flex items-center justify-center mx-auto">
-                  <Upload className="w-8 h-8 text-gray-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold mb-2">
-                    Drag and drop your project files
-                  </h3>
-                  <p className="text-gray-400">
-                    or click to browse files
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Supported Files */}
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Supported File Types</h3>
-              <div className="grid grid-cols-1 gap-3">
-                {supportedFiles.map((file, index) => (
-                  <div key={index} className="flex items-center space-x-3 p-3 bg-gray-900 rounded-xl">
-                    <div className="text-gray-400">
-                      {file.icon}
-                    </div>
-                    <div>
-                      <div className="font-medium">{file.name}</div>
-                      <div className="text-sm text-gray-400">{file.desc}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Results Section */}
-          <div className="space-y-8">
-            {/* Uploaded Files */}
-            {uploadedFiles.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold mb-4">Uploaded Files</h3>
-                <div className="space-y-2">
-                  {uploadedFiles.map((file, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-900 rounded-xl">
-                      <div className="flex items-center space-x-3">
-                        <FileText className="w-5 h-5 text-gray-400" />
-                        <span className="font-medium">{file.name}</span>
-                        <span className="text-sm text-gray-400">
-                          ({(file.size / 1024).toFixed(1)} KB)
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => removeFile(index)}
-                        className="text-gray-400 hover:text-red-400 transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Generate Button */}
-            <button
-              onClick={generateMDCFiles}
-              disabled={isGenerating || uploadedFiles.length === 0}
-              className="w-full bg-white hover:bg-gray-100 disabled:bg-gray-800 disabled:text-gray-500 text-black font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-3"
-            >
-              {isGenerating ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-                  <span>Generating .mdc files...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5" />
-                  <span>Generate .mdc Files</span>
-                </>
-              )}
-            </button>
-
-            {/* Generated Files */}
-            {generatedFiles.length > 0 && (
-              <div>
-                <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
-                  <CheckCircle className="w-5 h-5 text-green-400" />
-                  <span>Generated Files</span>
+        {!showPreview ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Form Section */}
+            <div className="space-y-8">
+              {/* Project Name */}
+              <div className="card-emerald">
+                <h3 className="text-xl font-bold mb-4 text-emerald-400 flex items-center space-x-2">
+                  <FileText className="w-5 h-5" />
+                  <span>Project Name</span>
                 </h3>
-                <div className="space-y-2">
-                  {generatedFiles.map((fileName, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-green-900/20 border border-green-800 rounded-xl">
-                      <div className="flex items-center space-x-3">
-                        <FileText className="w-5 h-5 text-green-400" />
-                        <span className="font-medium">{fileName}</span>
-                      </div>
-                      <button
-                        onClick={() => downloadFile(fileName)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center space-x-2"
-                      >
-                        <Download className="w-4 h-4" />
-                        <span>Download</span>
-                      </button>
-                    </div>
+                <input
+                  type="text"
+                  value={formData.projectName}
+                  onChange={(e) => setFormData({...formData, projectName: e.target.value})}
+                  placeholder="e.g., TaskFlow - Project Management Platform"
+                  className="w-full p-4 bg-zinc-950 border border-emerald-500/30 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 font-space"
+                />
+              </div>
+
+              {/* Project Description */}
+              <div className="card-emerald">
+                <h3 className="text-xl font-bold mb-4 text-emerald-400 flex items-center space-x-2">
+                  <Brain className="w-5 h-5" />
+                  <span>Project Description</span>
+                </h3>
+                <textarea
+                  value={formData.projectDescription}
+                  onChange={(e) => setFormData({...formData, projectDescription: e.target.value})}
+                  placeholder="Describe your project in detail: features, functionality, goals, and vision..."
+                  className="w-full h-32 p-4 bg-zinc-950 border border-emerald-500/30 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 resize-none font-space"
+                />
+              </div>
+
+              {/* Target Audience */}
+              <div className="card-emerald">
+                <h3 className="text-xl font-bold mb-4 text-emerald-400 flex items-center space-x-2">
+                  <Target className="w-5 h-5" />
+                  <span>Target Audience</span>
+                </h3>
+                <input
+                  type="text"
+                  value={formData.targetAudience}
+                  onChange={(e) => setFormData({...formData, targetAudience: e.target.value})}
+                  placeholder="e.g., Small to medium businesses, project managers, remote teams"
+                  className="w-full p-4 bg-zinc-950 border border-emerald-500/30 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 font-space"
+                />
+              </div>
+
+              {/* Business Goals */}
+              <div className="card-emerald">
+                <h3 className="text-xl font-bold mb-4 text-emerald-400 flex items-center space-x-2">
+                  <Rocket className="w-5 h-5" />
+                  <span>Business Goals</span>
+                </h3>
+                <textarea
+                  value={formData.businessGoals}
+                  onChange={(e) => setFormData({...formData, businessGoals: e.target.value})}
+                  placeholder="What are the main business objectives? Revenue targets, user acquisition, market penetration..."
+                  className="w-full h-24 p-4 bg-zinc-950 border border-emerald-500/30 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 resize-none font-space"
+                />
+              </div>
+            </div>
+
+            {/* Second Column */}
+            <div className="space-y-8">
+              {/* Primary Language */}
+              <div className="card-emerald">
+                <h3 className="text-xl font-bold mb-4 text-emerald-400 flex items-center space-x-2">
+                  <Code className="w-5 h-5" />
+                  <span>Primary Language</span>
+                </h3>
+                <select
+                  value={formData.primaryLanguage}
+                  onChange={(e) => setFormData({...formData, primaryLanguage: e.target.value})}
+                  className="w-full p-4 bg-zinc-950 border border-emerald-500/30 rounded-xl text-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 font-space"
+                >
+                  {languages.map(lang => (
+                    <option key={lang} value={lang} className="bg-zinc-950">{lang}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Tech Stack */}
+              <div className="card-emerald">
+                <h3 className="text-xl font-bold mb-4 text-emerald-400 flex items-center space-x-2">
+                  <Settings className="w-5 h-5" />
+                  <span>Tech Stack</span>
+                </h3>
+                <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                  {techStackOptions.map(tech => (
+                    <button
+                      key={tech}
+                      onClick={() => toggleTechStack(tech)}
+                      className={`p-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                        formData.techStack.includes(tech)
+                          ? 'bg-emerald-500 text-black'
+                          : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
+                      }`}
+                    >
+                      {tech}
+                    </button>
                   ))}
                 </div>
+                {formData.techStack.length > 0 && (
+                  <div className="mt-4 p-3 bg-emerald-950/50 rounded-xl border border-emerald-500/20">
+                    <p className="text-sm text-emerald-300">
+                      Selected: {formData.techStack.join(', ')}
+                    </p>
+                  </div>
+                )}
               </div>
-            )}
+
+              {/* Project Type */}
+              <div className="card-emerald">
+                <h3 className="text-xl font-bold mb-4 text-emerald-400 flex items-center space-x-2">
+                  <BookOpen className="w-5 h-5" />
+                  <span>Project Type</span>
+                </h3>
+                <select
+                  value={formData.projectType}
+                  onChange={(e) => setFormData({...formData, projectType: e.target.value})}
+                  className="w-full p-4 bg-zinc-950 border border-emerald-500/30 rounded-xl text-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 font-space"
+                >
+                  {projectTypes.map(type => (
+                    <option key={type} value={type} className="bg-zinc-950">{type}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Timeline & Team */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="card-emerald">
+                  <h3 className="text-lg font-bold mb-3 text-emerald-400">Timeline</h3>
+                  <select
+                    value={formData.timeline}
+                    onChange={(e) => setFormData({...formData, timeline: e.target.value})}
+                    className="w-full p-3 bg-zinc-950 border border-emerald-500/30 rounded-xl text-white focus:outline-none focus:border-emerald-500 text-sm font-space"
+                  >
+                    <option value="1-3 months">1-3 months</option>
+                    <option value="3-6 months">3-6 months</option>
+                    <option value="6-12 months">6-12 months</option>
+                    <option value="12+ months">12+ months</option>
+                  </select>
+                </div>
+                <div className="card-emerald">
+                  <h3 className="text-lg font-bold mb-3 text-emerald-400">Team Size</h3>
+                  <select
+                    value={formData.teamSize}
+                    onChange={(e) => setFormData({...formData, teamSize: e.target.value})}
+                    className="w-full p-3 bg-zinc-950 border border-emerald-500/30 rounded-xl text-white focus:outline-none focus:border-emerald-500 text-sm font-space"
+                  >
+                    <option value="1 developer">1 developer</option>
+                    <option value="2-5 developers">2-5 developers</option>
+                    <option value="5-10 developers">5-10 developers</option>
+                    <option value="10+ developers">10+ developers</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Specific Requirements */}
+              <div className="card-emerald">
+                <h3 className="text-xl font-bold mb-4 text-emerald-400 flex items-center space-x-2">
+                  <Shield className="w-5 h-5" />
+                  <span>Specific Requirements</span>
+                </h3>
+                <textarea
+                  value={formData.specificRequirements}
+                  onChange={(e) => setFormData({...formData, specificRequirements: e.target.value})}
+                  placeholder="Any specific features, integrations, compliance needs, performance requirements..."
+                  className="w-full h-24 p-4 bg-zinc-950 border border-emerald-500/30 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 resize-none font-space"
+                />
+              </div>
+
+              {/* Generate Button */}
+              <button
+                onClick={generatePRD}
+                disabled={isGenerating || !formData.projectName.trim() || !formData.projectDescription.trim()}
+                className="w-full btn-emerald text-lg py-6 disabled:opacity-50 disabled:cursor-not-allowed group"
+              >
+                {isGenerating ? (
+                  <div className="flex items-center justify-center space-x-3">
+                    <RefreshCw className="w-6 h-6 animate-spin" />
+                    <span>Generating Comprehensive PRD...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center space-x-3">
+                    <Brain className="w-6 h-6" />
+                    <span>Generate PRD</span>
+                    <Wand2 className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </div>
+                )}
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          // PRD Preview Section
+          <div className="space-y-8">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-bold text-emerald-400 flex items-center space-x-3">
+                <CheckCircle className="w-8 h-8" />
+                <span>Generated PRD</span>
+              </h2>
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={copyToClipboard}
+                  className="btn-emerald flex items-center space-x-2"
+                >
+                  <FileText className="w-5 h-5" />
+                  <span>Copy</span>
+                </button>
+                <button
+                  onClick={downloadPRD}
+                  className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 flex items-center space-x-2"
+                >
+                  <Download className="w-5 h-5" />
+                  <span>Download PRD</span>
+                </button>
+                <button
+                  onClick={() => setShowPreview(false)}
+                  className="bg-zinc-700 hover:bg-zinc-600 text-white px-4 py-3 rounded-xl transition-all duration-300"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+              <div className="bg-black/20 border border-white/10 rounded-2xl p-6 max-h-[70vh] overflow-y-auto">
+                <pre className="text-gray-200 whitespace-pre-wrap font-mono text-sm leading-relaxed">
+                  {generatedPRD}
+                </pre>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
+
     </div>
   )
 }

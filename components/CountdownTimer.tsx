@@ -44,7 +44,7 @@ const FlipNumber = memo(function FlipNumber({ value, label, index }: FlipNumberP
         <AnimatePresence mode="wait">
           <motion.div
             key={value}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold gradient-text absolute flip-number"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold text-white absolute flip-number font-code"
             initial={{
               rotateX: 90,
               y: -30,
@@ -73,14 +73,15 @@ const FlipNumber = memo(function FlipNumber({ value, label, index }: FlipNumberP
             }}
             style={{
               transformStyle: 'preserve-3d',
-              transformOrigin: 'center center'
+              transformOrigin: 'center center',
+              textShadow: '0 0 20px rgba(255, 255, 255, 0.5)'
             }}
           >
             {formattedValue}
 
             {/* Number shadow effect */}
             <motion.div
-              className="absolute inset-0 text-3xl md:text-4xl lg:text-5xl font-bold text-primary-400/20 -z-10"
+              className="absolute inset-0 text-3xl md:text-4xl lg:text-5xl font-bold text-zinc-600/20 -z-10 font-code"
               initial={{ y: 5, opacity: 0 }}
               animate={{ y: 2, opacity: 0.3 }}
               exit={{ y: 8, opacity: 0 }}
@@ -103,7 +104,7 @@ const FlipNumber = memo(function FlipNumber({ value, label, index }: FlipNumberP
             {[...Array(6)].map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute w-1 h-1 bg-primary-400 rounded-full"
+                className="absolute w-1 h-1 bg-white rounded-full"
                 style={{
                   left: '50%',
                   top: '50%',
@@ -131,27 +132,27 @@ const FlipNumber = memo(function FlipNumber({ value, label, index }: FlipNumberP
         </AnimatePresence>
       </div>
 
-      <div className="text-sm md:text-base text-gray-400 uppercase tracking-wider font-medium mt-2">
+      <div className="text-sm md:text-base text-zinc-400 uppercase tracking-wider font-medium mt-2 font-space">
         {label}
       </div>
 
       {/* Enhanced decorative elements */}
       <motion.div
-        className="absolute top-2 right-2 w-2 h-2 bg-primary-400 rounded-full opacity-0 group-hover:opacity-100"
-        whileHover={{ scale: 1.5, boxShadow: "0 0 10px rgba(34, 197, 94, 0.8)" }}
+        className="absolute top-2 right-2 w-2 h-2 bg-white rounded-full opacity-0 group-hover:opacity-100"
+        whileHover={{ scale: 1.5, boxShadow: "0 0 10px rgba(255, 255, 255, 0.8)" }}
         transition={{ duration: 0.3 }}
       />
       <motion.div
-        className="absolute bottom-2 left-2 w-1 h-1 bg-accent-400 rounded-full opacity-0 group-hover:opacity-100"
-        whileHover={{ scale: 2, boxShadow: "0 0 8px rgba(16, 185, 129, 0.8)" }}
+        className="absolute bottom-2 left-2 w-1 h-1 bg-zinc-400 rounded-full opacity-0 group-hover:opacity-100"
+        whileHover={{ scale: 2, boxShadow: "0 0 8px rgba(255, 255, 255, 0.6)" }}
         transition={{ duration: 0.3, delay: 0.1 }}
       />
 
       {/* Enhanced flip effect background */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-b from-primary-500/10 via-transparent to-accent-500/10 opacity-0 group-hover:opacity-100 rounded-2xl"
+        className="absolute inset-0 bg-gradient-to-b from-white/5 via-transparent to-zinc-800/20 opacity-0 group-hover:opacity-100 rounded-2xl"
         whileHover={{
-          background: "linear-gradient(to bottom, rgba(34, 197, 94, 0.15), transparent, rgba(16, 185, 129, 0.15))"
+          background: "linear-gradient(to bottom, rgba(255, 255, 255, 0.08), transparent, rgba(255, 255, 255, 0.03))"
         }}
         transition={{ duration: 0.3 }}
       />
@@ -201,8 +202,8 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="countdown-card animate-pulse">
-            <div className="h-12 bg-gray-700 rounded mb-2"></div>
-            <div className="h-4 bg-gray-700 rounded"></div>
+            <div className="h-12 bg-zinc-800 rounded mb-2"></div>
+            <div className="h-4 bg-zinc-800 rounded"></div>
           </div>
         ))}
       </div>
@@ -219,7 +220,7 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
   return (
     <div className="space-y-6">
       <motion.h2 
-        className="text-2xl md:text-3xl font-semibold text-center gradient-text"
+        className="text-2xl md:text-3xl font-semibold text-center text-white font-space"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -244,9 +245,9 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8, duration: 0.6 }}
       >
-        <p className="text-gray-400 text-sm md:text-base">
+        <p className="text-zinc-400 text-sm md:text-base font-space">
           Until the big reveal on{' '}
-          <span className="text-primary-400 font-semibold">
+          <span className="text-white font-semibold">
             July 26, 2025
           </span>
         </p>

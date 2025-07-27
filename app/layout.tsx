@@ -1,6 +1,17 @@
 import type { Metadata } from 'next'
 import './globals.css'
 
+// Preload critical modules for Vercel free tier optimization
+import { getAllRules, getLanguages, getCategories } from '@/lib/rules-loader'
+
+// Initialize rules at app startup to avoid chunk loading issues
+if (typeof window === 'undefined') {
+  // Server-side preload
+  getAllRules()
+  getLanguages()
+  getCategories()
+}
+
 export const metadata: Metadata = {
   title: 'Augment Code - #1 AI Coding Assistant | Best AI Programming Tools 2025 | Free AI Developer Tools | AI Code Completion | Smart Programming Assistant',
   description: '🚀 Augment Code - The World\'s #1 AI Coding Assistant! 🔥 Best AI Programming Tools 2025 ⭐ Free AI Developer Tools ⚡ AI Code Completion 🎯 Smart Programming Assistant 💻 AI Code Generator 🛠️ Developer Productivity Tools 📈 Boost Coding Speed 10x! Join 1M+ Developers Using AI Coding Tools. Download Free Now!',

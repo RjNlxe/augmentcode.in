@@ -8,17 +8,17 @@ import { rustRules } from '../rules/rust'
 import { javaRules } from '../rules/java'
 import { cppRules } from '../rules/cpp'
 import { cRules } from '../rules/c'
-import { swiftRules } from '../rules/swift'
+import { swiftuiRules as swiftRules } from '../rules/swift'
 import { flutterRules } from '../rules/flutter'
 import { angularRules } from '../rules/angular'
-import { vueRules } from '../rules/vue'
+import { vueTsRules as vueRules } from '../rules/vue'
 import { svelteRules } from '../rules/svelte'
 import { svelteKitRules } from '../rules/sveltekit'
 import { astroRules } from '../rules/astro'
 import { remixRules } from '../rules/remix'
-import { nuxtjsRules } from '../rules/nuxtjs'
+import { nuxtJsRules as nuxtjsRules } from '../rules/nuxtjs'
 import { djangoRules } from '../rules/django'
-import { fastApiRules } from '../rules/fastapi'
+import { fastapiRules as fastApiRules } from '../rules/fastapi'
 import { flaskRules } from '../rules/flask'
 import { laravelRules } from '../rules/laravel'
 import { railsRules } from '../rules/rails'
@@ -27,7 +27,6 @@ import { fastifyRules } from '../rules/fastify'
 import { dotnetRules } from '../rules/dotnet'
 import { blazorRules } from '../rules/blazor'
 import { ionicRules } from '../rules/ionic'
-import { expoRules } from '../rules/expo'
 import { tauriRules } from '../rules/tauri'
 import { elixirRules } from '../rules/elixir'
 import { luaRules } from '../rules/lua'
@@ -35,10 +34,7 @@ import { juliaRules } from '../rules/julia'
 import { solidityRules } from '../rules/solidity'
 import { solanaRules } from '../rules/solana'
 import { cosmwasmRules } from '../rules/cosmwasm'
-import { onchainKitRules } from '../rules/onchainkit'
 import { terraformRules } from '../rules/terraform'
-import { cloudflareRules } from '../rules/cloudflare'
-import { devopsBackendRules } from '../rules/devops-backend'
 import { edgeComputingRules } from '../rules/edge-computing'
 import { aiMl2025Rules } from '../rules/ai-ml-2025'
 import { deepLearningRules } from '../rules/deep-learning'
@@ -50,50 +46,38 @@ import { pythonDataProcessingRules } from '../rules/python-data-processing'
 import { pythonWebModernRules } from '../rules/python-web-modern'
 import { webDevelopmentRules } from '../rules/web-development'
 import { frontEndRules } from '../rules/front-end'
-import { modernCssRules } from '../rules/modern-css'
 import { htmlAndCssRules } from '../rules/htmlandcss'
+import { modernCssRules } from '../rules/modern-css'
 import { htmxRules } from '../rules/htmx'
 import { bootstrapRules } from '../rules/bootstrap'
-import { ghostTailwindCssRules } from '../rules/ghost-tailwindcss'
+import { techStackRules } from '../rules/tech-stack'
 import { wordpressRules } from '../rules/wordpress'
-import { wordpressWoocommerceRules } from '../rules/wordpress-woocommerce'
 import { drupalRules } from '../rules/drupal'
+import { sanityRules } from '../rules/sanity'
 import { jekyllRules } from '../rules/jekyll'
-import { gatsbyRules } from '../rules/gastby'
-import { chromeExtensionRules } from '../rules/chrome-extension'
-import { androidRules } from '../rules/android'
-import { unityCSharpRules } from '../rules/unity-c-sharp'
-import { pixijsRules } from '../rules/pixijs'
-import { viewComfyRules } from '../rules/viewcomfy'
 import { playwrightRules } from '../rules/playwright'
 import { webScrapingRules } from '../rules/web-scraping'
-import { prismaRules } from '../rules/prisma'
-import { convexRules } from '../rules/convex'
-import { sanityRules } from '../rules/sanity'
-import { bunRules } from '../rules/bun'
-import { denoRules } from '../rules/deno'
-import { autohotkeyRules } from '../rules/autohotkey'
-import { arduinoFrameworkRules } from '../rules/arduino-framework'
-import { vivadoRules } from '../rules/vivado'
-import { abapRules } from '../rules/abap'
-import { abapFundamentalsRules } from '../rules/abap-fundamentals'
-import { abapPerformanceRules } from '../rules/abap-performance'
-import { alRules } from '../rules/al'
+import { chromeExtensionRules } from '../rules/chrome-extension'
 import { salesforceRules } from '../rules/salesforce'
 import { odooRules } from '../rules/odoo'
+import { bunRules } from '../rules/bun'
+import { denoRules } from '../rules/deno'
+import { convexRules } from '../rules/convex'
+import { prismaRules } from '../rules/prisma'
 import { robocorpRules } from '../rules/robocorp'
 import { rspecRules } from '../rules/rspec'
-import { railsApiRules } from '../rules/rails-api'
-import { rustWasmRules } from '../rules/rust-wasm'
-import { techStackRules } from '../rules/tech-stack'
-import { technicalTutorialsRules } from '../rules/technical-tutorials'
-import { uiuxDesignRules } from '../rules/uiux-design'
-import { metaPromptRules } from '../rules/meta-prompt'
-import { openApiUserStoryRules } from '../rules/open-api-user-story'
-import { globalRules } from '../rules/global'
-import { manifestRules } from '../rules/manifest'
+import { abapFundamentalsRules } from '../rules/abap-fundamentals'
+import { abapPerformanceRules } from '../rules/abap-performance'
+import { androidRules } from '../rules/android'
+import { arduinoFrameworkRules } from '../rules/arduino-framework'
 import { angularIonicFirebaseFirestoreRules } from '../rules/angular-ionic-firebase-firestore'
-import { monorepoTamaguiRules } from '../rules/monorepo-tamagui'
+import { unityCSharpRules } from '../rules/unity-c-sharp'
+import { vivadoRules } from '../rules/vivado'
+import { technicalTutorialsRules } from '../rules/technical-tutorials'
+import { rustWasmRules } from '../rules/rust-wasm'
+import { openApiUserStoryRules } from '../rules/open-api-user-story'
+import { metaPromptRules } from '../rules/meta-prompt'
+import { globalRules } from '../rules/global'
 
 export interface Rule {
   id: string
@@ -107,189 +91,300 @@ export interface Rule {
   content: string
 }
 
-// Helper function to extract language from tags or filename
-function extractLanguage(tags: string[], slug: string): string {
-  // Common language mappings
-  const languageMap: { [key: string]: string } = {
-    'nextjs': 'Next.js',
-    'react': 'React',
-    'python': 'Python',
-    'typescript': 'TypeScript',
-    'javascript': 'JavaScript',
-    'go': 'Go',
-    'rust': 'Rust',
-    'java': 'Java',
-    'cpp': 'C++',
-    'c': 'C',
-    'swift': 'Swift',
-    'flutter': 'Flutter',
-    'angular': 'Angular',
-    'vue': 'Vue.js',
-    'svelte': 'Svelte',
-    'astro': 'Astro',
-    'remix': 'Remix',
-    'nuxt': 'Nuxt.js',
-    'django': 'Django',
-    'fastapi': 'FastAPI',
-    'flask': 'Flask',
-    'laravel': 'Laravel',
-    'rails': 'Ruby on Rails',
-    'nestjs': 'NestJS',
-    'dotnet': '.NET',
-    'blazor': 'Blazor',
-    'ionic': 'Ionic',
-    'expo': 'Expo',
-    'tauri': 'Tauri',
-    'elixir': 'Elixir',
-    'lua': 'Lua',
-    'julia': 'Julia',
-    'solidity': 'Solidity',
-    'solana': 'Solana',
-    'terraform': 'Terraform',
-    'css': 'CSS',
-    'html': 'HTML',
-    'htmx': 'HTMX',
-    'bootstrap': 'Bootstrap',
-    'wordpress': 'WordPress',
-    'drupal': 'Drupal',
-    'jekyll': 'Jekyll',
-    'gatsby': 'Gatsby',
-    'android': 'Android',
-    'unity': 'Unity',
-    'pixijs': 'PixiJS',
-    'playwright': 'Playwright',
-    'prisma': 'Prisma',
-    'bun': 'Bun',
-    'deno': 'Deno',
-    'autohotkey': 'AutoHotkey',
-    'arduino': 'Arduino',
-    'abap': 'ABAP',
-    'salesforce': 'Salesforce',
-    'odoo': 'Odoo'
+// Helper function to extract rules from various formats
+function extractRules(rulesData: any, collectionName: string): Rule[] {
+  if (Array.isArray(rulesData)) {
+    return rulesData.map((rule, index) => normalizeRule(rule, index, collectionName))
   }
-
-  // Check tags first
-  for (const tag of tags) {
-    const lowerTag = tag.toLowerCase()
-    if (languageMap[lowerTag]) {
-      return languageMap[lowerTag]
+  if (rulesData && typeof rulesData === 'object') {
+    // Handle different export formats
+    const values = Object.values(rulesData)
+    const firstValue = values[0]
+    if (Array.isArray(firstValue)) {
+      return firstValue.map((rule, index) => normalizeRule(rule, index, collectionName))
     }
   }
-
-  // Check slug
-  for (const [key, value] of Object.entries(languageMap)) {
-    if (slug.toLowerCase().includes(key)) {
-      return value
-    }
-  }
-
-  return 'General'
+  return []
 }
 
-// Helper function to extract category
-function extractCategory(tags: string[], libs: string[], slug: string): string {
-  const categoryKeywords = {
-    'Frontend': ['react', 'vue', 'angular', 'svelte', 'frontend', 'ui', 'css', 'html'],
-    'Backend': ['django', 'fastapi', 'flask', 'rails', 'nestjs', 'backend', 'api'],
-    'Mobile': ['react-native', 'flutter', 'ionic', 'expo', 'android', 'swift'],
-    'Web Framework': ['nextjs', 'nuxt', 'remix', 'astro', 'sveltekit'],
-    'Database': ['prisma', 'mongodb', 'postgresql', 'mysql', 'database'],
-    'DevOps': ['terraform', 'docker', 'kubernetes', 'cloudflare', 'devops'],
-    'AI/ML': ['ai', 'ml', 'machine-learning', 'deep-learning', 'data-science'],
-    'Blockchain': ['solidity', 'solana', 'cosmwasm', 'blockchain', 'web3'],
-    'Desktop': ['tauri', 'electron', 'unity', 'desktop'],
-    'Testing': ['playwright', 'jest', 'testing', 'rspec'],
-    'Styling': ['css', 'tailwind', 'bootstrap', 'styling', 'design'],
-    'CMS': ['wordpress', 'drupal', 'sanity', 'cms'],
-    'Tools': ['webpack', 'vite', 'bundler', 'tools', 'automation']
-  }
+// Helper function to normalize rule data with unique IDs
+function normalizeRule(rule: any, index: number, collectionName: string): Rule {
+  // Create a more unique ID by combining collection name, index, and a cleaned title
+  const titleSlug = rule.title?.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'untitled'
+  const uniqueId = `${collectionName}-${index}-${titleSlug.substring(0, 30)}`
 
-  const allText = [...tags, ...libs, slug].join(' ').toLowerCase()
-
-  for (const [category, keywords] of Object.entries(categoryKeywords)) {
-    if (keywords.some(keyword => allText.includes(keyword))) {
-      return category
-    }
-  }
-
-  return 'General'
-}
-
-// Convert rule format to our interface
-function convertRule(rule: any, index: number): Rule {
-  const language = extractLanguage(rule.tags || [], rule.slug || '')
-  const category = extractCategory(rule.tags || [], rule.libs || [], rule.slug || '')
-
-  // Removed fake ratings and downloads for better performance
-
-  // Normalize line endings to prevent hydration issues
-  const normalizeText = (text: string) => text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
-
-  const normalizedContent = rule.content ? normalizeText(rule.content) : ''
-  const description = normalizedContent
-    ? normalizedContent.substring(0, 200).replace(/\n+/g, ' ').trim() + '...'
-    : 'No description available'
-
-  return {
-    id: `${rule.slug || 'rule'}-${index}`,
+  const normalizedRule: Rule = {
+    id: uniqueId,
     title: rule.title || 'Untitled Rule',
-    description,
-    language,
-    category,
-    tags: rule.tags || [],
-    libs: rule.libs || [],
-    slug: rule.slug || '',
-    content: normalizedContent
+    description: rule.description || (rule.content ? rule.content.substring(0, 200).replace(/\n+/g, ' ').trim() + '...' : 'No description available'),
+    language: extractLanguageFromRule(rule),
+    category: extractCategoryFromRule(rule),
+    tags: Array.isArray(rule.tags) ? rule.tags : [],
+    libs: Array.isArray(rule.libs) ? rule.libs : [],
+    slug: rule.slug || `${collectionName}-rule-${index}`,
+    content: rule.content || ''
   }
+  return normalizedRule
 }
 
-// Combine all rules
-export function getAllRules(): Rule[] {
-  const allRuleCollections = [
-    nextjsRules, pythonRules, reactNativeRules, typescriptRules, goRules, rustRules,
-    javaRules, cppRules, cRules, swiftRules, flutterRules, angularRules, vueRules,
-    svelteRules, svelteKitRules, astroRules, remixRules, nuxtjsRules, djangoRules,
-    fastApiRules, flaskRules, laravelRules, railsRules, nestjsRules, fastifyRules,
-    dotnetRules, blazorRules, ionicRules, expoRules, tauriRules, elixirRules,
-    luaRules, juliaRules, solidityRules, solanaRules, cosmwasmRules, onchainKitRules,
-    terraformRules, cloudflareRules, devopsBackendRules, edgeComputingRules,
-    aiMl2025Rules, deepLearningRules, jaxRules, dataAnalystRules, pythonDataScienceRules,
-    pythonMachineLearningRules, pythonDataProcessingRules, pythonWebModernRules,
-    webDevelopmentRules, frontEndRules, modernCssRules, htmlAndCssRules, htmxRules,
-    bootstrapRules, ghostTailwindCssRules, wordpressRules, wordpressWoocommerceRules,
-    drupalRules, jekyllRules, gatsbyRules, chromeExtensionRules, androidRules,
-    unityCSharpRules, pixijsRules, viewComfyRules, playwrightRules, webScrapingRules,
-    prismaRules, convexRules, sanityRules, bunRules, denoRules, autohotkeyRules,
-    arduinoFrameworkRules, vivadoRules, abapRules, abapFundamentalsRules,
-    abapPerformanceRules, alRules, salesforceRules, odooRules, robocorpRules,
-    rspecRules, railsApiRules, rustWasmRules, techStackRules, technicalTutorialsRules,
-    uiuxDesignRules, metaPromptRules, openApiUserStoryRules, globalRules,
-    manifestRules, angularIonicFirebaseFirestoreRules, monorepoTamaguiRules
-  ]
-
-  const allRules: Rule[] = []
-  
-  allRuleCollections.forEach((collection, collectionIndex) => {
-    if (Array.isArray(collection)) {
-      collection.forEach((rule, ruleIndex) => {
-        allRules.push(convertRule(rule, collectionIndex * 1000 + ruleIndex))
-      })
+// Helper function to extract language from rule
+function extractLanguageFromRule(rule: any): string {
+  if (rule.tags && Array.isArray(rule.tags)) {
+    const languageMap: { [key: string]: string } = {
+      'JavaScript': 'JavaScript',
+      'TypeScript': 'TypeScript',
+      'Python': 'Python',
+      'React': 'React',
+      'Next.js': 'Next.js',
+      'Vue.js': 'Vue.js',
+      'Vue': 'Vue.js',
+      'Angular': 'Angular',
+      'Django': 'Django',
+      'FastAPI': 'FastAPI',
+      'Go': 'Go',
+      'Rust': 'Rust',
+      'Java': 'Java',
+      'C++': 'C++',
+      'Swift': 'Swift',
+      'PHP': 'PHP',
+      'Ruby': 'Ruby',
+      'C#': 'C#',
+      'Kotlin': 'Kotlin',
+      'Dart': 'Dart',
+      'Flutter': 'Flutter',
+      'React Native': 'React Native',
+      'Node.js': 'Node.js',
+      'Express': 'Node.js',
+      'Svelte': 'Svelte',
+      'Astro': 'Astro',
+      'Remix': 'Remix',
+      'Nuxt.js': 'Nuxt.js'
     }
-  })
 
+    for (const tag of rule.tags) {
+      if (languageMap[tag]) {
+        return languageMap[tag]
+      }
+    }
+
+    // If no exact match, return the first tag that looks like a language/framework
+    const firstTag = rule.tags[0]
+    if (firstTag && firstTag.length > 1) {
+      return firstTag
+    }
+  }
+  return 'General'
+}
+
+// Helper function to extract category from rule
+function extractCategoryFromRule(rule: any): string {
+  const content = (rule.content || '').toLowerCase()
+  const tags = (rule.tags || []).join(' ').toLowerCase()
+  const libs = (rule.libs || []).join(' ').toLowerCase()
+  const title = (rule.title || '').toLowerCase()
+  const allText = `${title} ${content} ${tags} ${libs}`
+
+  // Frontend frameworks and libraries
+  if (allText.includes('react') || allText.includes('vue') || allText.includes('angular') ||
+      allText.includes('svelte') || allText.includes('frontend') || allText.includes('ui') ||
+      allText.includes('component') || allText.includes('next.js') || allText.includes('nuxt') ||
+      allText.includes('astro') || allText.includes('remix')) {
+    return 'Frontend'
+  }
+
+  // Backend frameworks and technologies
+  if (allText.includes('backend') || allText.includes('api') || allText.includes('server') ||
+      allText.includes('django') || allText.includes('fastapi') || allText.includes('flask') ||
+      allText.includes('express') || allText.includes('nestjs') || allText.includes('fastify') ||
+      allText.includes('laravel') || allText.includes('rails')) {
+    return 'Backend'
+  }
+
+  // Mobile development
+  if (allText.includes('mobile') || allText.includes('ios') || allText.includes('android') ||
+      allText.includes('flutter') || allText.includes('react native') || allText.includes('swift') ||
+      allText.includes('kotlin') || allText.includes('ionic')) {
+    return 'Mobile'
+  }
+
+  // Database and data storage
+  if (allText.includes('database') || allText.includes('sql') || allText.includes('prisma') ||
+      allText.includes('mongodb') || allText.includes('postgres') || allText.includes('mysql') ||
+      allText.includes('redis') || allText.includes('orm')) {
+    return 'Database'
+  }
+
+  // DevOps and infrastructure
+  if (allText.includes('devops') || allText.includes('deploy') || allText.includes('infrastructure') ||
+      allText.includes('terraform') || allText.includes('docker') || allText.includes('kubernetes') ||
+      allText.includes('aws') || allText.includes('cloud') || allText.includes('ci/cd')) {
+    return 'DevOps'
+  }
+
+  // AI/ML and data science
+  if (allText.includes('machine learning') || allText.includes('ai') || allText.includes('neural') ||
+      allText.includes('data science') || allText.includes('deep learning') || allText.includes('tensorflow') ||
+      allText.includes('pytorch') || allText.includes('jax') || allText.includes('data analyst')) {
+    return 'AI/ML'
+  }
+
+  // Testing
+  if (allText.includes('test') || allText.includes('testing') || allText.includes('jest') ||
+      allText.includes('cypress') || allText.includes('playwright') || allText.includes('rspec')) {
+    return 'Testing'
+  }
+
+  // Security
+  if (allText.includes('security') || allText.includes('auth') || allText.includes('encryption') ||
+      allText.includes('oauth') || allText.includes('jwt')) {
+    return 'Security'
+  }
+
+  return 'General'
+}
+
+// Pre-compute all rules at module load time for Vercel free tier optimization
+const allRuleCollections = [
+  { name: 'nextjs', rules: nextjsRules },
+  { name: 'python', rules: pythonRules },
+  { name: 'react-native', rules: reactNativeRules },
+  { name: 'typescript', rules: typescriptRules },
+  { name: 'go', rules: goRules },
+  { name: 'rust', rules: rustRules },
+  { name: 'java', rules: javaRules },
+  { name: 'cpp', rules: cppRules },
+  { name: 'c', rules: cRules },
+  { name: 'swift', rules: swiftRules },
+  { name: 'flutter', rules: flutterRules },
+  { name: 'angular', rules: angularRules },
+  { name: 'vue', rules: vueRules },
+  { name: 'svelte', rules: svelteRules },
+  { name: 'sveltekit', rules: svelteKitRules },
+  { name: 'astro', rules: astroRules },
+  { name: 'remix', rules: remixRules },
+  { name: 'nuxtjs', rules: nuxtjsRules },
+  { name: 'django', rules: djangoRules },
+  { name: 'fastapi', rules: fastApiRules },
+  { name: 'flask', rules: flaskRules },
+  { name: 'laravel', rules: laravelRules },
+  { name: 'rails', rules: railsRules },
+  { name: 'nestjs', rules: nestjsRules },
+  { name: 'fastify', rules: fastifyRules },
+  { name: 'dotnet', rules: dotnetRules },
+  { name: 'blazor', rules: blazorRules },
+  { name: 'ionic', rules: ionicRules },
+  { name: 'tauri', rules: tauriRules },
+  { name: 'elixir', rules: elixirRules },
+  { name: 'lua', rules: luaRules },
+  { name: 'julia', rules: juliaRules },
+  { name: 'solidity', rules: solidityRules },
+  { name: 'solana', rules: solanaRules },
+  { name: 'cosmwasm', rules: cosmwasmRules },
+  { name: 'terraform', rules: terraformRules },
+  { name: 'edge-computing', rules: edgeComputingRules },
+  { name: 'ai-ml-2025', rules: aiMl2025Rules },
+  { name: 'deep-learning', rules: deepLearningRules },
+  { name: 'jax', rules: jaxRules },
+  { name: 'data-analyst', rules: dataAnalystRules },
+  { name: 'python-data-science', rules: pythonDataScienceRules },
+  { name: 'python-machine-learning', rules: pythonMachineLearningRules },
+  { name: 'python-data-processing', rules: pythonDataProcessingRules },
+  { name: 'python-web-modern', rules: pythonWebModernRules },
+  { name: 'web-development', rules: webDevelopmentRules },
+  { name: 'front-end', rules: frontEndRules },
+  { name: 'htmlandcss', rules: htmlAndCssRules },
+  { name: 'modern-css', rules: modernCssRules },
+  { name: 'htmx', rules: htmxRules },
+  { name: 'bootstrap', rules: bootstrapRules },
+  { name: 'tech-stack', rules: techStackRules },
+  { name: 'wordpress', rules: wordpressRules },
+  { name: 'drupal', rules: drupalRules },
+  { name: 'sanity', rules: sanityRules },
+  { name: 'jekyll', rules: jekyllRules },
+  { name: 'playwright', rules: playwrightRules },
+  { name: 'web-scraping', rules: webScrapingRules },
+  { name: 'chrome-extension', rules: chromeExtensionRules },
+  { name: 'salesforce', rules: salesforceRules },
+  { name: 'odoo', rules: odooRules },
+  { name: 'bun', rules: bunRules },
+  { name: 'deno', rules: denoRules },
+  { name: 'convex', rules: convexRules },
+  { name: 'prisma', rules: prismaRules },
+  { name: 'robocorp', rules: robocorpRules },
+  { name: 'rspec', rules: rspecRules },
+  { name: 'abap-fundamentals', rules: abapFundamentalsRules },
+  { name: 'abap-performance', rules: abapPerformanceRules },
+  { name: 'android', rules: androidRules },
+  { name: 'arduino-framework', rules: arduinoFrameworkRules },
+  { name: 'angular-ionic-firebase-firestore', rules: angularIonicFirebaseFirestoreRules },
+  { name: 'unity-c-sharp', rules: unityCSharpRules },
+  { name: 'vivado', rules: vivadoRules },
+  { name: 'technical-tutorials', rules: technicalTutorialsRules },
+  { name: 'rust-wasm', rules: rustWasmRules },
+  { name: 'open-api-user-story', rules: openApiUserStoryRules },
+  { name: 'meta-prompt', rules: metaPromptRules },
+  { name: 'global', rules: globalRules },
+]
+
+// Pre-compute all rules at module initialization
+const precomputedRules: Rule[] = (() => {
+  const allRules: Rule[] = []
+  const usedIds = new Set<string>()
+
+  for (const collection of allRuleCollections) {
+    if (collection.rules) {
+      try {
+        const rules = extractRules(collection.rules, collection.name)
+        // Ensure unique IDs
+        rules.forEach(rule => {
+          let finalId = rule.id
+          let counter = 1
+          while (usedIds.has(finalId)) {
+            finalId = `${rule.id}-${counter}`
+            counter++
+          }
+          rule.id = finalId
+          usedIds.add(finalId)
+        })
+        allRules.push(...rules)
+      } catch (error) {
+        console.warn(`Failed to load rules from ${collection.name}:`, error)
+      }
+    }
+  }
+
+  console.log(`Pre-loaded ${allRules.length} total rules for Vercel optimization`)
   return allRules
-}
+})()
 
-// Get unique languages
-export function getLanguages(): string[] {
-  const rules = getAllRules()
-  const languages = new Set(rules.map(rule => rule.language))
+// Pre-compute languages and categories for instant access
+const precomputedLanguages: string[] = (() => {
+  const languages = new Set<string>()
+  precomputedRules.forEach(rule => {
+    languages.add(rule.language)
+  })
   return ['All', ...Array.from(languages).sort()]
+})()
+
+const precomputedCategories: string[] = (() => {
+  const categories = new Set<string>()
+  precomputedRules.forEach(rule => {
+    categories.add(rule.category)
+  })
+  return ['All', ...Array.from(categories).sort()]
+})()
+
+export function getAllRules(): Rule[] {
+  // Return pre-computed rules for instant access
+  return precomputedRules
 }
 
-// Get unique categories
+export function getLanguages(): string[] {
+  // Return pre-computed languages for instant access
+  return precomputedLanguages
+}
+
 export function getCategories(): string[] {
-  const rules = getAllRules()
-  const categories = new Set(rules.map(rule => rule.category))
-  return ['All', ...Array.from(categories).sort()]
+  // Return pre-computed categories for instant access
+  return precomputedCategories
 }

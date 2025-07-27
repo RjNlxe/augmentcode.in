@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Sparkles, Wand2, Code, Brain, Zap, X, Copy, Download, RefreshCw, Palette, Shield, Rocket, Target, Settings, BookOpen } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { Sparkles, Wand2, Code, Brain, Zap, X, Copy, Download, RefreshCw, Palette, Shield, Rocket, Target, Settings, BookOpen, ChevronDown, Plus } from 'lucide-react'
 
 interface AIRulesGeneratorProps {
   isOpen: boolean
@@ -19,7 +19,24 @@ export default function AIRulesGenerator({ isOpen, onClose }: AIRulesGeneratorPr
     context: '',
     customPrompt: ''
   })
-  const [useDropdowns, setUseDropdowns] = useState(false)
+  const [dropdownStates, setDropdownStates] = useState({
+    language: false,
+    category: false,
+    complexity: false,
+    focus: false
+  })
+  const [customInputs, setCustomInputs] = useState({
+    language: '',
+    category: '',
+    complexity: '',
+    focus: ''
+  })
+  const [inputMode, setInputMode] = useState({
+    language: 'preset', // 'preset' or 'custom'
+    category: 'preset',
+    complexity: 'preset',
+    focus: 'preset'
+  })
 
   // Prevent background scrolling when modal is open
   useEffect(() => {
@@ -33,6 +50,24 @@ export default function AIRulesGenerator({ isOpen, onClose }: AIRulesGeneratorPr
       document.body.style.overflow = 'unset'
     }
   }, [isOpen])
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element
+      if (!target.closest('.dropdown-container')) {
+        setDropdownStates({
+          language: false,
+          category: false,
+          complexity: false,
+          focus: false
+        })
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const languages = [
     { name: 'JavaScript', icon: '🟨', color: 'from-yellow-500 to-orange-500' },
@@ -75,52 +110,55 @@ export default function AIRulesGenerator({ isOpen, onClose }: AIRulesGeneratorPr
   ]
 
   const generateSystemPrompt = () => {
-    return `You are an expert software engineer and coding mentor with 15+ years of experience across multiple programming languages and frameworks. Your task is to generate a comprehensive, actionable coding rule based on the user's specifications.
+    const currentLanguage = getCurrentValue('language')
+    const currentCategory = getCurrentValue('category')
+    const currentComplexity = getCurrentValue('complexity')
+    const currentFocus = getCurrentValue('focus')
 
-CONTEXT:
-- Language/Framework: ${formData.language}
-- Category: ${formData.category}
-- Complexity Level: ${formData.complexity}
-- Primary Focus: ${formData.focus}
-- Additional Context: ${formData.context || 'None provided'}
-- Custom Requirements: ${formData.customPrompt || 'None provided'}
+    return `You are a senior software architect. Create a comprehensive Project Requirements Document (PRD) for a ${currentLanguage} ${currentCategory} project. Focus on ${currentFocus}.
 
-INSTRUCTIONS:
-Generate a detailed coding rule that includes:
+Project Context: ${formData.context || 'Modern web application'}
+Specific Requirements: ${formData.customPrompt || 'Standard development practices'}
 
-1. **Rule Title**: A clear, memorable title (max 60 characters)
-2. **Rule Description**: A concise explanation of what the rule addresses (2-3 sentences)
-3. **Why It Matters**: Explain the importance and benefits (2-3 sentences)
-4. **Implementation Guidelines**: Step-by-step instructions or principles
-5. **Code Example**: Provide both "Bad" and "Good" examples with explanations
-6. **Best Practices**: 3-5 specific actionable tips
-7. **Common Pitfalls**: 2-3 mistakes to avoid
-8. **Tools/Resources**: Relevant tools, linters, or libraries that help
-9. **Complexity Level**: Appropriate for ${formData.complexity} developers
-10. **Tags**: 3-5 relevant tags for categorization
+Write a complete PRD document in markdown format. Include actual content, not templates. Generate specific examples, real code snippets, and actionable guidelines.
 
-FORMATTING REQUIREMENTS:
-- Use clear markdown formatting
-- Include syntax highlighting for code blocks
-- Use emojis sparingly but effectively
-- Keep explanations concise but comprehensive
-- Ensure examples are practical and realistic
-- Make it actionable and immediately applicable
+Structure the document as follows:
 
-QUALITY STANDARDS:
-- The rule should be specific to ${formData.language} and ${formData.category}
-- Focus heavily on ${formData.focus}
-- Appropriate complexity for ${formData.complexity} level
-- Include real-world scenarios and use cases
-- Provide measurable benefits when possible
-- Ensure the rule is current with modern practices
+# Project Requirements Document
 
-Generate a professional, comprehensive coding rule that developers can immediately apply to improve their code quality.`
+## 1. Project Overview
+Write a detailed project description, target users, business goals, and success metrics.
+
+## 2. Technical Stack & Architecture
+Detail the ${currentLanguage} technology stack, system architecture, database design, and API structure.
+
+## 3. Coding Standards & Rules
+Provide specific ${currentLanguage} coding conventions, file organization, naming patterns, and code quality rules.
+
+## 4. Development Guidelines
+Include testing strategies, code review processes, documentation standards, and development workflows.
+
+## 5. Feature Specifications
+List core features with detailed user stories, acceptance criteria, and technical requirements.
+
+## 6. Performance & Security
+Define performance benchmarks, security requirements, and compliance standards.
+
+## 7. Implementation Roadmap
+Create a phased development plan with timelines, milestones, and resource allocation.
+
+## 8. Quality Assurance
+Establish testing protocols, deployment procedures, and monitoring strategies.
+
+Generate real, actionable content for each section. Include code examples in ${currentLanguage}. Make it comprehensive and ready to use immediately. Focus heavily on ${currentFocus} throughout the document.`
   }
 
   const generateRule = async () => {
-    if (!formData.language || !formData.category) {
-      alert('Please select at least a language and category')
+    const currentLanguage = getCurrentValue('language')
+    const currentCategory = getCurrentValue('category')
+
+    if (!currentLanguage || !currentCategory) {
+      alert('Please select or enter at least a language/framework and project category')
       return
     }
 
@@ -132,7 +170,7 @@ Generate a professional, comprehensive coding rule that developers can immediate
       setGeneratedRule(rule)
     } catch (error) {
       console.error('Error generating rule:', error)
-      alert('Failed to generate rule. Please try again.')
+      alert('Failed to generate PRD. Please try again.')
     } finally {
       setIsGenerating(false)
     }
@@ -140,7 +178,7 @@ Generate a professional, comprehensive coding rule that developers can immediate
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(generatedRule)
-    alert('Rule copied to clipboard!')
+    alert('PRD copied to clipboard!')
   }
 
   const downloadRule = () => {
@@ -148,12 +186,120 @@ Generate a professional, comprehensive coding rule that developers can immediate
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `${formData.language}-${formData.category}-rule.md`
+    a.download = 'prd.md'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
+
+  // Helper functions for dropdown management
+  const toggleDropdown = (field: keyof typeof dropdownStates) => {
+    setDropdownStates(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }))
+  }
+
+  const selectPreset = (field: keyof typeof formData, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+    setInputMode(prev => ({ ...prev, [field]: 'preset' }))
+    setDropdownStates(prev => ({ ...prev, [field]: false }))
+  }
+
+  const handleCustomInput = (field: keyof typeof customInputs, value: string) => {
+    setCustomInputs(prev => ({ ...prev, [field]: value }))
+    setFormData(prev => ({ ...prev, [field]: value }))
+    setInputMode(prev => ({ ...prev, [field]: 'custom' }))
+  }
+
+  const getCurrentValue = (field: 'language' | 'category' | 'complexity' | 'focus') => {
+    return inputMode[field] === 'custom' ? customInputs[field] : formData[field]
+  }
+
+  // Reusable dropdown component
+  const DropdownField = ({
+    field,
+    title,
+    icon,
+    options,
+    placeholder = "Type your custom option..."
+  }: {
+    field: 'language' | 'category' | 'complexity' | 'focus'
+    title: string
+    icon: React.ReactNode
+    options: Array<{ name: string; icon?: React.ReactNode; color?: string; desc?: string }>
+    placeholder?: string
+  }) => (
+    <div className="space-y-3">
+      <h3 className="text-xl font-bold text-white mb-4 flex items-center space-x-2">
+        {icon}
+        <span>{title}</span>
+      </h3>
+
+      <div className="relative dropdown-container">
+        {/* Current Selection / Custom Input */}
+        <div
+          className="w-full p-4 bg-white/5 border border-white/10 rounded-2xl cursor-pointer hover:border-white/20 transition-colors"
+          onClick={() => toggleDropdown(field)}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              {inputMode[field] === 'preset' && options.find(opt => opt.name === formData[field])?.icon && (
+                <div className="text-xl">{options.find(opt => opt.name === formData[field])?.icon}</div>
+              )}
+              <span className="text-white font-medium">
+                {getCurrentValue(field) || 'Select or type custom...'}
+              </span>
+            </div>
+            <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${dropdownStates[field] ? 'rotate-180' : ''}`} />
+          </div>
+        </div>
+
+        {/* Dropdown Menu */}
+        {dropdownStates[field] && (
+          <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl z-50 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-500/20 scrollbar-track-transparent">
+            {/* Custom Input */}
+            <div className="p-4 border-b border-white/10">
+              <div className="flex items-center space-x-2 mb-2">
+                <Plus className="w-4 h-4 text-emerald-400" />
+                <span className="text-sm font-medium text-emerald-400">Custom Option</span>
+              </div>
+              <input
+                type="text"
+                placeholder={placeholder}
+                value={customInputs[field]}
+                onChange={(e) => handleCustomInput(field, e.target.value)}
+                className="w-full p-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500/50"
+                autoFocus={inputMode[field] === 'custom'}
+              />
+            </div>
+
+            {/* Preset Options */}
+            <div className="p-2">
+              {options.map((option) => (
+                <button
+                  key={option.name}
+                  onClick={() => selectPreset(field, option.name)}
+                  className={`w-full text-left p-3 rounded-xl transition-all duration-200 flex items-center space-x-3 ${
+                    formData[field] === option.name && inputMode[field] === 'preset'
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                      : 'hover:bg-white/5 text-gray-300 hover:text-white'
+                  }`}
+                >
+                  {option.icon && <div className="text-xl">{option.icon}</div>}
+                  <div>
+                    <div className="font-medium">{option.name}</div>
+                    {option.desc && <div className="text-xs opacity-70">{option.desc}</div>}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
 
   if (!isOpen) return null
 
@@ -177,9 +323,9 @@ Generate a professional, comprehensive coding rule that developers can immediate
               </div>
               <div>
                 <h1 className="text-4xl font-black bg-gradient-to-r from-white via-emerald-200 to-cyan-200 bg-clip-text text-transparent">
-                  AI Rules Generator
+                  AI PRD Generator
                 </h1>
-                <p className="text-xl text-gray-300 mt-1">Create custom coding rules with artificial intelligence</p>
+                <p className="text-xl text-gray-300 mt-1">Generate complete project requirements with coding rules & technical specs</p>
               </div>
             </div>
             <button
@@ -196,138 +342,69 @@ Generate a professional, comprehensive coding rule that developers can immediate
           <div className="w-1/2 p-8 border-r border-white/10 overflow-y-auto">
             <div className="space-y-8">
               {/* Language Selection */}
-              <div>
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center space-x-2">
-                  <Code className="w-5 h-5 text-emerald-400" />
-                  <span>Choose Language</span>
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {languages.map(lang => (
-                    <button
-                      key={lang.name}
-                      onClick={() => setFormData({ ...formData, language: lang.name })}
-                      className={`group relative p-4 rounded-2xl border transition-all duration-300 hover:scale-105 ${
-                        formData.language === lang.name
-                          ? `bg-gradient-to-r ${lang.color} border-white/30 text-white shadow-lg`
-                          : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{lang.icon}</span>
-                        <span className="font-semibold">{lang.name}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <DropdownField
+                field="language"
+                title="Choose Language"
+                icon={<Code className="w-5 h-5 text-emerald-400" />}
+                options={languages}
+                placeholder="Type your preferred language/framework..."
+              />
 
               {/* Category Selection */}
-              <div>
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center space-x-2">
-                  <Palette className="w-5 h-5 text-purple-400" />
-                  <span>Select Category</span>
-                </h3>
-                <div className="grid grid-cols-1 gap-3">
-                  {categories.map(cat => (
-                    <button
-                      key={cat.name}
-                      onClick={() => setFormData({ ...formData, category: cat.name })}
-                      className={`group relative p-4 rounded-2xl border transition-all duration-300 hover:scale-105 ${
-                        formData.category === cat.name
-                          ? `bg-gradient-to-r ${cat.color} border-white/30 text-white shadow-lg`
-                          : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className={`p-2 rounded-xl ${formData.category === cat.name ? 'bg-white/20' : 'bg-white/10'}`}>
-                            {cat.icon}
-                          </div>
-                          <div className="text-left">
-                            <div className="font-semibold">{cat.name}</div>
-                            <div className="text-sm opacity-80">{cat.desc}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <DropdownField
+                field="category"
+                title="Select Category"
+                icon={<Palette className="w-5 h-5 text-purple-400" />}
+                options={categories}
+                placeholder="Type your custom category..."
+              />
 
               {/* Complexity Level */}
-              <div>
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center space-x-2">
-                  <BookOpen className="w-5 h-5 text-blue-400" />
-                  <span>Complexity Level</span>
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {complexities.map(level => (
-                    <button
-                      key={level.name}
-                      onClick={() => setFormData({ ...formData, complexity: level.name })}
-                      className={`group relative p-4 rounded-2xl border transition-all duration-300 hover:scale-105 ${
-                        formData.complexity === level.name
-                          ? `bg-gradient-to-r ${level.color} border-white/30 text-white shadow-lg`
-                          : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20'
-                      }`}
-                    >
-                      <div className="text-center">
-                        <div className="font-bold text-lg">{level.name}</div>
-                        <div className="text-sm opacity-80 mt-1">{level.desc}</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <DropdownField
+                field="complexity"
+                title="Complexity Level"
+                icon={<BookOpen className="w-5 h-5 text-blue-400" />}
+                options={complexities}
+                placeholder="Type your preferred complexity level..."
+              />
 
               {/* Focus Area */}
+              <DropdownField
+                field="focus"
+                title="Primary Focus"
+                icon={<Target className="w-5 h-5 text-cyan-400" />}
+                options={focuses}
+                placeholder="Type your custom focus area..."
+              />
+
+              {/* Project Context */}
               <div>
                 <h3 className="text-xl font-bold text-white mb-4 flex items-center space-x-2">
-                  <Target className="w-5 h-5 text-cyan-400" />
-                  <span>Primary Focus</span>
+                  <Settings className="w-5 h-5 text-orange-400" />
+                  <span>Project Context</span>
                 </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {focuses.map(focus => (
-                    <button
-                      key={focus.name}
-                      onClick={() => setFormData({ ...formData, focus: focus.name })}
-                      className={`group relative p-4 rounded-2xl border transition-all duration-300 hover:scale-105 ${
-                        formData.focus === focus.name
-                          ? `bg-gradient-to-r ${focus.color} border-white/30 text-white shadow-lg`
-                          : 'bg-white/5 border-white/10 text-gray-300 hover:bg-white/10 hover:border-white/20'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{focus.icon}</span>
-                        <span className="font-semibold">{focus.name}</span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Context */}
-              <div>
-                <h3 className="text-xl font-bold text-white mb-4">Additional Context</h3>
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                   <textarea
                     value={formData.context}
                     onChange={(e) => setFormData({ ...formData, context: e.target.value })}
-                    placeholder="Describe your specific use case, project type, or requirements..."
+                    placeholder="Describe your project: type, scale, target users, business goals, timeline..."
                     className="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none resize-none"
                     rows={3}
                   />
                 </div>
               </div>
 
-              {/* Custom Prompt */}
+              {/* Specific Requirements */}
               <div>
-                <h3 className="text-xl font-bold text-white mb-4">Custom Requirements</h3>
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center space-x-2">
+                  <BookOpen className="w-5 h-5 text-indigo-400" />
+                  <span>Specific Requirements</span>
+                </h3>
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
                   <textarea
                     value={formData.customPrompt}
                     onChange={(e) => setFormData({ ...formData, customPrompt: e.target.value })}
-                    placeholder="Any specific requirements or aspects you want the rule to cover..."
+                    placeholder="Specific features, integrations, compliance needs, performance requirements..."
                     className="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none resize-none"
                     rows={3}
                   />
@@ -346,12 +423,12 @@ Generate a professional, comprehensive coding rule that developers can immediate
                     {isGenerating ? (
                       <>
                         <RefreshCw className="w-6 h-6 animate-spin" />
-                        <span>Generating Amazing Rule...</span>
+                        <span>Generating Complete PRD...</span>
                       </>
                     ) : (
                       <>
                         <Brain className="w-6 h-6" />
-                        <span>Generate AI Rule</span>
+                        <span>Generate PRD with AI</span>
                         <Wand2 className="w-6 h-6" />
                       </>
                     )}
@@ -390,9 +467,9 @@ Generate a professional, comprehensive coding rule that developers can immediate
                       <div className="w-8 h-8 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-xl flex items-center justify-center">
                         <Sparkles className="w-5 h-5 text-white" />
                       </div>
-                      <span>Generated Rule</span>
+                      <span>Generated PRD</span>
                     </h3>
-                    <p className="text-gray-400">Your custom coding rule is ready!</p>
+                    <p className="text-gray-400">Your comprehensive project requirements document is ready!</p>
                   </div>
                   <div className="bg-black/20 border border-white/10 rounded-2xl p-6 max-h-96 overflow-y-auto">
                     <pre className="text-gray-200 whitespace-pre-wrap font-mono text-sm leading-relaxed">
@@ -416,7 +493,7 @@ Generate a professional, comprehensive coding rule that developers can immediate
                 <div className="space-y-4">
                   <h3 className="text-3xl font-bold text-white">Ready to Create Magic</h3>
                   <p className="text-xl text-gray-300 max-w-md leading-relaxed">
-                    Configure your preferences and let AI generate the perfect coding rule for your needs
+                    Configure your project details and let AI generate a comprehensive PRD with coding rules and technical specifications
                   </p>
                   <div className="flex items-center justify-center space-x-2 text-emerald-400">
                     <Wand2 className="w-5 h-5" />

@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { Search, Code, Copy, X, Grid, List, BookOpen, Zap, Tag, Eye, FileDown, Menu, Sparkles, Layers, ChevronRight, Filter, Brain, Wand2 } from 'lucide-react'
 import { getAllRules, getLanguages, getCategories, type Rule } from '@/lib/rules-loader'
 import AIRulesGenerator from '@/components/AIRulesGenerator'
@@ -8,6 +10,7 @@ import AIRulesGenerator from '@/components/AIRulesGenerator'
 const ITEMS_PER_PAGE = 24 // Optimized for performance
 
 export default function RulesPage() {
+  const searchParams = useSearchParams()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedLanguage, setSelectedLanguage] = useState('All')
   const [selectedCategory, setSelectedCategory] = useState('All')
@@ -23,10 +26,21 @@ export default function RulesPage() {
   const [searchDebounced, setSearchDebounced] = useState('')
   const [aiRulesOpen, setAiRulesOpen] = useState(false)
 
-  // Client-side hydration check
+  // Client-side hydration check and URL parameter handling
   useEffect(() => {
     setIsClient(true)
-  }, [])
+
+    // Handle URL parameters for filtering
+    const languageParam = searchParams.get('language')
+    const categoryParam = searchParams.get('category')
+
+    if (languageParam) {
+      setSelectedLanguage(languageParam)
+    }
+    if (categoryParam) {
+      setSelectedCategory(categoryParam)
+    }
+  }, [searchParams])
 
   // Debounced search for better performance
   useEffect(() => {
@@ -127,10 +141,10 @@ ${rule.content}
   }, [])
 
   return (
-    <main className="min-h-screen bg-dark-950 text-white flex">
+    <main className="min-h-screen bg-black text-white flex font-space">
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-80 bg-gradient-to-b from-dark-900 to-dark-950 border-r border-emerald-500/20 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed inset-y-0 left-0 z-50 w-80 bg-gradient-to-b from-zinc-900 to-zinc-950 border-r border-emerald-500/20 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
@@ -295,7 +309,7 @@ ${rule.content}
 
       {/* Main Content */}
       <div className="flex-1 lg:ml-0">
-        <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 py-8 px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 py-8 px-6 lg:px-8">
         <div className="max-w-7xl mx-auto relative z-10">
           {/* Mobile Menu Button */}
           <div className="flex justify-between items-center mb-6 lg:hidden">
@@ -308,6 +322,25 @@ ${rule.content}
             </button>
           </div>
 
+          {/* Navigation Header */}
+          <div className="flex items-center justify-between mb-8">
+            <Link
+              href="/"
+              className="group flex items-center space-x-2 text-gray-400 hover:text-emerald-400 transition-colors duration-200"
+            >
+              <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center group-hover:bg-emerald-500/30 transition-colors">
+                <ChevronRight className="w-4 h-4 rotate-180" />
+              </div>
+              <span className="font-medium">Back to Home</span>
+            </Link>
+
+            <div className="text-right">
+              <div className="text-sm text-gray-400">
+                Showing {filteredRules.length} of {allRules.length} rules
+              </div>
+            </div>
+          </div>
+
           <div className="text-center mb-12">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">
               <span className="bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 bg-clip-text text-transparent">
@@ -318,6 +351,24 @@ ${rule.content}
               Discover powerful coding rules and best practices for modern development
             </p>
 
+            {/* Stats */}
+            <div className="flex items-center justify-center gap-4 md:gap-8 mb-8">
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-emerald-400">{allRules.length}</div>
+                <div className="text-xs md:text-sm text-gray-400">Total Rules</div>
+              </div>
+              <div className="w-px h-8 md:h-12 bg-emerald-500/30"></div>
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-emerald-400">{languages.length - 1}</div>
+                <div className="text-xs md:text-sm text-gray-400">Languages</div>
+              </div>
+              <div className="w-px h-8 md:h-12 bg-emerald-500/30"></div>
+              <div className="text-center">
+                <div className="text-2xl md:text-3xl font-bold text-emerald-400">{categories.length - 1}</div>
+                <div className="text-xs md:text-sm text-gray-400">Categories</div>
+              </div>
+            </div>
+
             {/* Search Bar */}
             <div className="relative max-w-2xl mx-auto mb-8">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
@@ -326,7 +377,7 @@ ${rule.content}
                 placeholder="Search rules, tags, libraries..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-dark-900/80 border border-emerald-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-colors duration-200"
+                className="w-full pl-12 pr-4 py-3 search-mono text-white placeholder-zinc-500 focus:outline-none transition-colors duration-200"
               />
             </div>
 
@@ -409,7 +460,7 @@ ${rule.content}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-purple-700 rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
                 <Brain className="relative w-5 h-5" />
-                <span className="relative">AI Rules</span>
+                <span className="relative">AI PRD</span>
                 <Wand2 className="relative w-5 h-5" />
               </button>
             </div>
@@ -480,7 +531,7 @@ ${rule.content}
                         {/* Footer */}
                         <div className="flex items-center justify-between text-sm text-gray-400 pt-3 border-t border-emerald-500/20">
                           <div className="flex items-center space-x-3">
-                            {rule.libs.length > 0 && (
+                            {rule.libs && rule.libs.length > 0 && (
                               <div className="flex items-center space-x-1">
                                 <BookOpen className="w-4 h-4" />
                                 <span>{rule.libs.length} libs</span>
@@ -756,7 +807,7 @@ ${rule.content}
                       )}
                     </button>
                   </div>
-                  <div className="bg-dark-950 rounded-xl p-4 border border-emerald-500/20">
+                  <div className="card-mono">
                     <pre className="text-gray-300 text-sm whitespace-pre-wrap overflow-x-auto">
                       {selectedRule.content}
                     </pre>

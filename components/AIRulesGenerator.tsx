@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useCallback, useMemo, memo } from 'react'
 import { Sparkles, Wand2, Code, Brain, Zap, X, Copy, Download, RefreshCw, Palette, Shield, Rocket, Target, Settings, BookOpen, ChevronDown, Plus } from 'lucide-react'
 
 interface AIRulesGeneratorProps {
@@ -8,7 +8,7 @@ interface AIRulesGeneratorProps {
   onClose: () => void
 }
 
-export default function AIRulesGenerator({ isOpen, onClose }: AIRulesGeneratorProps) {
+const AIRulesGenerator = memo(function AIRulesGenerator({ isOpen, onClose }: AIRulesGeneratorProps) {
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedRule, setGeneratedRule] = useState('')
   const [formData, setFormData] = useState({
@@ -69,7 +69,8 @@ export default function AIRulesGenerator({ isOpen, onClose }: AIRulesGeneratorPr
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const languages = [
+  // Memoize static data to prevent recreation on every render
+  const languages = useMemo(() => [
     { name: 'JavaScript', icon: '🟨', color: 'from-yellow-500 to-orange-500' },
     { name: 'TypeScript', icon: '🔷', color: 'from-blue-500 to-indigo-600' },
     { name: 'Python', icon: '🐍', color: 'from-green-500 to-emerald-600' },
@@ -82,32 +83,32 @@ export default function AIRulesGenerator({ isOpen, onClose }: AIRulesGeneratorPr
     { name: 'Rust', icon: '🦀', color: 'from-orange-500 to-red-600' },
     { name: 'PHP', icon: '🐘', color: 'from-purple-600 to-indigo-700' },
     { name: 'Swift', icon: '🍎', color: 'from-orange-400 to-red-500' }
-  ]
+  ], [])
 
-  const categories = [
+  const categories = useMemo(() => [
     { name: 'Best Practices', icon: <Target className="w-5 h-5" />, color: 'from-emerald-500 to-green-600', desc: 'Industry standards and proven methods' },
     { name: 'Performance', icon: <Rocket className="w-5 h-5" />, color: 'from-blue-500 to-cyan-600', desc: 'Speed and optimization techniques' },
     { name: 'Security', icon: <Shield className="w-5 h-5" />, color: 'from-red-500 to-pink-600', desc: 'Secure coding practices' },
     { name: 'Code Quality', icon: <Sparkles className="w-5 h-5" />, color: 'from-purple-500 to-indigo-600', desc: 'Clean, maintainable code' },
     { name: 'Architecture', icon: <Settings className="w-5 h-5" />, color: 'from-gray-500 to-slate-600', desc: 'System design patterns' },
     { name: 'Testing', icon: <Zap className="w-5 h-5" />, color: 'from-yellow-500 to-orange-600', desc: 'Testing strategies and methods' }
-  ]
+  ], [])
 
-  const complexities = [
+  const complexities = useMemo(() => [
     { name: 'Beginner', color: 'from-green-500 to-emerald-600', desc: 'New to programming' },
     { name: 'Intermediate', color: 'from-blue-500 to-cyan-600', desc: 'Some experience' },
     { name: 'Advanced', color: 'from-purple-500 to-indigo-600', desc: 'Experienced developer' },
     { name: 'Expert', color: 'from-red-500 to-pink-600', desc: 'Senior level expertise' }
-  ]
+  ], [])
 
-  const focuses = [
+  const focuses = useMemo(() => [
     { name: 'Performance', icon: '⚡', color: 'from-yellow-500 to-orange-600' },
     { name: 'Readability', icon: '📖', color: 'from-blue-500 to-cyan-600' },
     { name: 'Maintainability', icon: '🔧', color: 'from-green-500 to-emerald-600' },
     { name: 'Scalability', icon: '📈', color: 'from-purple-500 to-indigo-600' },
     { name: 'Security', icon: '🔒', color: 'from-red-500 to-pink-600' },
     { name: 'Testing', icon: '🧪', color: 'from-cyan-500 to-blue-600' }
-  ]
+  ], [])
 
   const generateSystemPrompt = () => {
     const currentLanguage = getCurrentValue('language')
@@ -210,7 +211,7 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
     return data.choices[0].message.content
   }
 
-  const generateRule = async () => {
+  const generateRule = useCallback(async () => {
     const currentLanguage = getCurrentValue('language')
     const currentCategory = getCurrentValue('category')
 
@@ -224,15 +225,21 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
       const systemPrompt = generateSystemPrompt()
       let rule = ''
 
-      // Try Pollinations AI first
+      // Try Pollinations AI first (optimized for Vercel free tier)
       try {
         console.log('Trying Pollinations AI API...')
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 10000) // 10s timeout for free tier
+
         const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(systemPrompt)}`, {
           method: 'GET',
           headers: {
             'Accept': 'text/plain',
-          }
+          },
+          signal: controller.signal
         })
+
+        clearTimeout(timeoutId)
 
         if (response.ok) {
           rule = await response.text()
@@ -246,9 +253,14 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
       } catch (pollinationsError) {
         console.log('❌ Pollinations AI failed, trying NVIDIA API backup...')
 
-        // Fallback to NVIDIA API
+        // Fallback to NVIDIA API with timeout
         try {
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), 15000) // 15s timeout for backup
+
           rule = await generateRuleWithNvidia(systemPrompt)
+          clearTimeout(timeoutId)
+
           if (rule && rule.trim().length > 0) {
             console.log('✅ NVIDIA API backup successful')
             setGeneratedRule(rule)
@@ -266,17 +278,17 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
     } finally {
       setIsGenerating(false)
     }
-  }
+  }, [generateSystemPrompt])
 
-  const copyToClipboard = () => {
+  const copyToClipboard = useCallback(() => {
     navigator.clipboard.writeText(generatedRule)
     alert('Coding rules copied to clipboard!')
-  }
+  }, [generatedRule])
 
-  const downloadRule = () => {
+  const downloadRule = useCallback(() => {
     const currentLanguage = getCurrentValue('language')
     const currentCategory = getCurrentValue('category')
-    const fileName = `${currentLanguage.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${currentCategory.toLowerCase().replace(/[^a-z0-9]/g, '-')}-rules.mdc`
+    const fileName = `${currentLanguage.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${currentCategory.toLowerCase().replace(/[^a-z0-9]/g, '-')}-rules.md`
 
     const blob = new Blob([generatedRule], { type: 'text/markdown' })
     const url = URL.createObjectURL(blob)
@@ -287,31 +299,31 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-  }
+  }, [generatedRule])
 
-  // Helper functions for dropdown management
-  const toggleDropdown = (field: keyof typeof dropdownStates) => {
+  // Helper functions for dropdown management - optimized with useCallback
+  const toggleDropdown = useCallback((field: keyof typeof dropdownStates) => {
     setDropdownStates(prev => ({
       ...prev,
       [field]: !prev[field]
     }))
-  }
+  }, [])
 
-  const selectPreset = (field: keyof typeof formData, value: string) => {
+  const selectPreset = useCallback((field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     setInputMode(prev => ({ ...prev, [field]: 'preset' }))
     setDropdownStates(prev => ({ ...prev, [field]: false }))
-  }
+  }, [])
 
-  const handleCustomInput = (field: keyof typeof customInputs, value: string) => {
+  const handleCustomInput = useCallback((field: keyof typeof customInputs, value: string) => {
     setCustomInputs(prev => ({ ...prev, [field]: value }))
     setFormData(prev => ({ ...prev, [field]: value }))
     setInputMode(prev => ({ ...prev, [field]: 'custom' }))
-  }
+  }, [])
 
-  const getCurrentValue = (field: 'language' | 'category' | 'complexity' | 'focus') => {
+  const getCurrentValue = useCallback((field: 'language' | 'category' | 'complexity' | 'focus') => {
     return inputMode[field] === 'custom' ? customInputs[field] : formData[field]
-  }
+  }, [inputMode, customInputs, formData])
 
   // Reusable dropdown component
   const DropdownField = ({
@@ -328,7 +340,7 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
     placeholder?: string
   }) => (
     <div className="space-y-3">
-      <h3 className="text-xl font-bold text-white mb-4 flex items-center space-x-2">
+      <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 flex items-center space-x-2">
         {icon}
         <span>{title}</span>
       </h3>
@@ -336,57 +348,57 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
       <div className="relative dropdown-container">
         {/* Current Selection / Custom Input */}
         <div
-          className="w-full p-4 bg-white/5 border border-white/10 rounded-2xl cursor-pointer hover:border-white/20 transition-colors"
+          className="w-full p-3 sm:p-4 bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl cursor-pointer hover:border-white/20 transition-colors"
           onClick={() => toggleDropdown(field)}
         >
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
               {inputMode[field] === 'preset' && options.find(opt => opt.name === formData[field])?.icon && (
-                <div className="text-xl">{options.find(opt => opt.name === formData[field])?.icon}</div>
+                <div className="text-lg sm:text-xl flex-shrink-0">{options.find(opt => opt.name === formData[field])?.icon}</div>
               )}
-              <span className="text-white font-medium">
+              <span className="text-white font-medium text-sm sm:text-base truncate">
                 {getCurrentValue(field) || 'Select or type custom...'}
               </span>
             </div>
-            <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${dropdownStates[field] ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 text-gray-400 transition-transform flex-shrink-0 ${dropdownStates[field] ? 'rotate-180' : ''}`} />
           </div>
         </div>
 
         {/* Dropdown Menu */}
         {dropdownStates[field] && (
-          <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl z-50 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-500/20 scrollbar-track-transparent">
+          <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-white/10 rounded-xl sm:rounded-2xl shadow-2xl z-50 max-h-60 sm:max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-500/20 scrollbar-track-transparent">
             {/* Custom Input */}
-            <div className="p-4 border-b border-white/10">
+            <div className="p-3 sm:p-4 border-b border-white/10">
               <div className="flex items-center space-x-2 mb-2">
-                <Plus className="w-4 h-4 text-emerald-400" />
-                <span className="text-sm font-medium text-emerald-400">Custom Option</span>
+                <Plus className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" />
+                <span className="text-xs sm:text-sm font-medium text-emerald-400">Custom Option</span>
               </div>
               <input
                 type="text"
                 placeholder={placeholder}
                 value={customInputs[field]}
                 onChange={(e) => handleCustomInput(field, e.target.value)}
-                className="w-full p-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500/50"
+                className="w-full p-2 sm:p-3 bg-white/5 border border-white/10 rounded-lg sm:rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500/50 text-sm sm:text-base"
                 autoFocus={inputMode[field] === 'custom'}
               />
             </div>
 
             {/* Preset Options */}
-            <div className="p-2">
+            <div className="p-1 sm:p-2">
               {options.map((option) => (
                 <button
                   key={option.name}
                   onClick={() => selectPreset(field, option.name)}
-                  className={`w-full text-left p-3 rounded-xl transition-all duration-200 flex items-center space-x-3 ${
+                  className={`w-full text-left p-2 sm:p-3 rounded-lg sm:rounded-xl transition-all duration-200 flex items-center space-x-2 sm:space-x-3 ${
                     formData[field] === option.name && inputMode[field] === 'preset'
                       ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                       : 'hover:bg-white/5 text-gray-300 hover:text-white'
                   }`}
                 >
-                  {option.icon && <div className="text-xl">{option.icon}</div>}
-                  <div>
-                    <div className="font-medium">{option.name}</div>
-                    {option.desc && <div className="text-xs opacity-70">{option.desc}</div>}
+                  {option.icon && <div className="text-lg sm:text-xl flex-shrink-0">{option.icon}</div>}
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium text-sm sm:text-base truncate">{option.name}</div>
+                    {option.desc && <div className="text-xs opacity-70 hidden sm:block">{option.desc}</div>}
                   </div>
                 </button>
               ))}
@@ -400,42 +412,42 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/90 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-xl z-50 flex items-center justify-center p-2 sm:p-4">
       {/* Animated Background */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-4 sm:top-20 left-4 sm:left-20 w-32 sm:w-72 h-32 sm:h-72 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-4 sm:bottom-20 right-4 sm:right-20 w-48 sm:w-96 h-48 sm:h-96 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 sm:w-80 h-40 sm:h-80 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-full blur-3xl animate-pulse" />
       </div>
 
-      <div className="relative bg-white/5 backdrop-blur-2xl rounded-3xl max-w-7xl w-full max-h-[95vh] overflow-hidden border border-white/10 shadow-2xl">
+      <div className="relative bg-white/5 backdrop-blur-2xl rounded-2xl sm:rounded-3xl w-full max-w-[95vw] sm:max-w-7xl max-h-[95vh] overflow-hidden border border-white/10 shadow-2xl">
         {/* Header */}
-        <div className="relative p-8 border-b border-white/10">
+        <div className="relative p-4 sm:p-6 lg:p-8 border-b border-white/10">
           <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-purple-500/10 to-cyan-500/10" />
           <div className="relative flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 via-cyan-400 to-purple-500 rounded-3xl flex items-center justify-center shadow-2xl">
-                <Brain className="w-9 h-9 text-white" />
+            <div className="flex items-center space-x-3 sm:space-x-6 flex-1 min-w-0">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-16 lg:h-16 bg-gradient-to-br from-emerald-400 via-cyan-400 to-purple-500 rounded-2xl sm:rounded-3xl flex items-center justify-center shadow-2xl flex-shrink-0">
+                <Brain className="w-5 h-5 sm:w-6 sm:h-6 lg:w-9 lg:h-9 text-white" />
               </div>
-              <div>
-                <h1 className="text-4xl font-black bg-gradient-to-r from-white via-emerald-200 to-cyan-200 bg-clip-text text-transparent">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-2xl lg:text-4xl font-black bg-gradient-to-r from-white via-emerald-200 to-cyan-200 bg-clip-text text-transparent truncate">
                   AI Rules Generator
                 </h1>
-                <p className="text-xl text-gray-300 mt-1">Generate comprehensive coding rules and best practices for any language</p>
+                <p className="text-xs sm:text-sm lg:text-xl text-gray-300 mt-1 hidden sm:block">Generate comprehensive coding rules and best practices for any language</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="w-12 h-12 bg-white/10 hover:bg-white/20 rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-110"
+              className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-white/10 hover:bg-white/20 rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 flex-shrink-0 ml-2"
             >
-              <X className="w-6 h-6 text-white" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
             </button>
           </div>
         </div>
 
-        <div className="flex h-[calc(95vh-200px)]">
+        <div className="flex flex-col lg:flex-row h-[calc(95vh-120px)] sm:h-[calc(95vh-140px)] lg:h-[calc(95vh-200px)]">
           {/* Left Panel - Form */}
-          <div className="w-1/2 p-8 border-r border-white/10 overflow-y-auto">
+          <div className="w-full lg:w-1/2 p-4 sm:p-6 lg:p-8 lg:border-r border-white/10 overflow-y-auto max-h-[40vh] lg:max-h-none">
             <div className="space-y-8">
               {/* Language Selection */}
               <DropdownField
@@ -475,16 +487,16 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
 
               {/* Project Context */}
               <div>
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center space-x-2">
-                  <Settings className="w-5 h-5 text-orange-400" />
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 flex items-center space-x-2">
+                  <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400" />
                   <span>Project Context</span>
                 </h3>
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-4">
                   <textarea
                     value={formData.context}
                     onChange={(e) => setFormData({ ...formData, context: e.target.value })}
                     placeholder="Describe your project: type, scale, target users, business goals, timeline..."
-                    className="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none resize-none"
+                    className="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none resize-none text-sm sm:text-base"
                     rows={3}
                   />
                 </div>
@@ -492,16 +504,16 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
 
               {/* Specific Requirements */}
               <div>
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center space-x-2">
-                  <BookOpen className="w-5 h-5 text-indigo-400" />
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4 flex items-center space-x-2">
+                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400" />
                   <span>Specific Requirements</span>
                 </h3>
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                <div className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-4">
                   <textarea
                     value={formData.customPrompt}
                     onChange={(e) => setFormData({ ...formData, customPrompt: e.target.value })}
                     placeholder="Specific features, integrations, compliance needs, performance requirements..."
-                    className="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none resize-none"
+                    className="w-full bg-transparent text-white placeholder-gray-400 focus:outline-none resize-none text-sm sm:text-base"
                     rows={3}
                   />
                 </div>
@@ -512,20 +524,22 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
                 <button
                   onClick={generateRule}
                   disabled={isGenerating}
-                  className="group relative w-full bg-gradient-to-r from-emerald-500 via-cyan-500 to-purple-600 hover:from-emerald-400 hover:via-cyan-400 hover:to-purple-500 disabled:from-gray-600 disabled:to-gray-700 p-6 rounded-3xl text-white font-bold text-xl transition-all duration-500 hover:scale-105 shadow-2xl"
+                  className="group relative w-full bg-gradient-to-r from-emerald-500 via-cyan-500 to-purple-600 hover:from-emerald-400 hover:via-cyan-400 hover:to-purple-500 disabled:from-gray-600 disabled:to-gray-700 p-4 sm:p-5 lg:p-6 rounded-2xl sm:rounded-3xl text-white font-bold text-base sm:text-lg lg:text-xl transition-all duration-500 hover:scale-105 shadow-2xl"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-cyan-600 to-purple-700 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500" />
-                  <div className="relative flex items-center justify-center space-x-4">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-cyan-600 to-purple-700 rounded-2xl sm:rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500" />
+                  <div className="relative flex items-center justify-center space-x-2 sm:space-x-3 lg:space-x-4">
                     {isGenerating ? (
                       <>
-                        <RefreshCw className="w-6 h-6 animate-spin" />
-                        <span>Generating Coding Rules...</span>
+                        <RefreshCw className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 animate-spin" />
+                        <span className="hidden sm:inline">Generating Coding Rules...</span>
+                        <span className="sm:hidden">Generating...</span>
                       </>
                     ) : (
                       <>
-                        <Brain className="w-6 h-6" />
-                        <span>Generate Rules with AI</span>
-                        <Wand2 className="w-6 h-6" />
+                        <Brain className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
+                        <span className="hidden sm:inline">Generate Rules with AI</span>
+                        <span className="sm:hidden">Generate AI Rules</span>
+                        <Wand2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6" />
                       </>
                     )}
                   </div>
@@ -535,65 +549,65 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
           </div>
 
           {/* Right Panel - Generated Rule */}
-          <div className="w-1/2 p-8 overflow-y-auto">
+          <div className="w-full lg:w-1/2 p-4 sm:p-6 lg:p-8 overflow-y-auto flex-1">
             {generatedRule ? (
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 {/* Action Buttons */}
-                <div className="flex items-center space-x-4">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
                   <button
                     onClick={copyToClipboard}
-                    className="group flex items-center space-x-3 bg-gradient-to-r from-emerald-500/20 to-green-500/20 hover:from-emerald-500/30 hover:to-green-500/30 border border-emerald-500/30 hover:border-emerald-500/50 px-6 py-3 rounded-2xl text-emerald-400 transition-all duration-300 hover:scale-105"
+                    className="group flex items-center justify-center space-x-2 sm:space-x-3 bg-gradient-to-r from-emerald-500/20 to-green-500/20 hover:from-emerald-500/30 hover:to-green-500/30 border border-emerald-500/30 hover:border-emerald-500/50 px-4 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl text-emerald-400 transition-all duration-300 hover:scale-105 text-sm sm:text-base"
                   >
-                    <Copy className="w-5 h-5" />
+                    <Copy className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span className="font-semibold">Copy Rule</span>
                   </button>
                   <button
                     onClick={downloadRule}
-                    className="group flex items-center space-x-3 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 hover:from-purple-500/30 hover:to-indigo-500/30 border border-purple-500/30 hover:border-purple-500/50 px-6 py-3 rounded-2xl text-purple-400 transition-all duration-300 hover:scale-105"
+                    className="group flex items-center justify-center space-x-2 sm:space-x-3 bg-gradient-to-r from-purple-500/20 to-indigo-500/20 hover:from-purple-500/30 hover:to-indigo-500/30 border border-purple-500/30 hover:border-purple-500/50 px-4 sm:px-6 py-2 sm:py-3 rounded-xl sm:rounded-2xl text-purple-400 transition-all duration-300 hover:scale-105 text-sm sm:text-base"
                   >
-                    <Download className="w-5 h-5" />
+                    <Download className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span className="font-semibold">Download</span>
                   </button>
                 </div>
 
                 {/* Generated Content */}
-                <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
-                  <div className="mb-6">
-                    <h3 className="text-2xl font-bold text-white mb-2 flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-xl flex items-center justify-center">
-                        <Sparkles className="w-5 h-5 text-white" />
+                <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl">
+                  <div className="mb-4 sm:mb-6">
+                    <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-white mb-2 flex items-center space-x-2 sm:space-x-3">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-lg sm:rounded-xl flex items-center justify-center">
+                        <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-white" />
                       </div>
                       <span>Generated Coding Rules</span>
                     </h3>
-                    <p className="text-gray-400">Your comprehensive coding rules and best practices are ready!</p>
+                    <p className="text-xs sm:text-sm lg:text-base text-gray-400">Your comprehensive coding rules and best practices are ready!</p>
                   </div>
-                  <div className="bg-black/20 border border-white/10 rounded-2xl p-6 max-h-96 overflow-y-auto">
-                    <pre className="text-gray-200 whitespace-pre-wrap font-mono text-sm leading-relaxed">
+                  <div className="bg-black/20 border border-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 max-h-48 sm:max-h-64 lg:max-h-96 overflow-y-auto">
+                    <pre className="text-gray-200 whitespace-pre-wrap font-mono text-xs sm:text-sm leading-relaxed">
                       {generatedRule}
                     </pre>
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center h-full text-center space-y-8">
+              <div className="flex flex-col items-center justify-center h-full text-center space-y-4 sm:space-y-6 lg:space-y-8 p-4">
                 <div className="relative">
-                  <div className="w-32 h-32 bg-gradient-to-br from-emerald-500/20 via-cyan-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
-                    <div className="w-24 h-24 bg-gradient-to-br from-emerald-400 to-purple-500 rounded-full flex items-center justify-center">
-                      <Brain className="w-12 h-12 text-white" />
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 lg:w-32 lg:h-32 bg-gradient-to-br from-emerald-500/20 via-cyan-500/20 to-purple-500/20 rounded-full flex items-center justify-center">
+                    <div className="w-16 h-16 sm:w-18 sm:h-18 lg:w-24 lg:h-24 bg-gradient-to-br from-emerald-400 to-purple-500 rounded-full flex items-center justify-center">
+                      <Brain className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-white" />
                     </div>
                   </div>
-                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-white" />
+                  <div className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                    <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 text-white" />
                   </div>
                 </div>
-                <div className="space-y-4">
-                  <h3 className="text-3xl font-bold text-white">Ready to Create Magic</h3>
-                  <p className="text-xl text-gray-300 max-w-md leading-relaxed">
+                <div className="space-y-2 sm:space-y-3 lg:space-y-4">
+                  <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">Ready to Create Magic</h3>
+                  <p className="text-sm sm:text-lg lg:text-xl text-gray-300 max-w-xs sm:max-w-md leading-relaxed">
                     Configure your language and focus area to generate comprehensive coding rules and best practices
                   </p>
                   <div className="flex items-center justify-center space-x-2 text-emerald-400">
-                    <Wand2 className="w-5 h-5" />
-                    <span className="font-semibold">AI-Powered Generation</span>
+                    <Wand2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="font-semibold text-sm sm:text-base">AI-Powered Generation</span>
                   </div>
                 </div>
               </div>
@@ -603,4 +617,6 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
       </div>
     </div>
   )
-}
+})
+
+export default AIRulesGenerator

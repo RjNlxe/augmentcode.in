@@ -326,8 +326,9 @@ const allRuleCollections = [
   { name: 'global', rules: globalRules },
 ]
 
-// Pre-compute all rules at module initialization
+// Pre-compute all rules at module initialization with performance optimization
 const precomputedRules: Rule[] = (() => {
+  const startTime = performance.now()
   const allRules: Rule[] = []
   const usedIds = new Set<string>()
 
@@ -335,8 +336,8 @@ const precomputedRules: Rule[] = (() => {
     if (collection.rules) {
       try {
         const rules = extractRules(collection.rules, collection.name)
-        // Ensure unique IDs
-        rules.forEach(rule => {
+        // Ensure unique IDs with optimized loop
+        for (const rule of rules) {
           let finalId = rule.id
           let counter = 1
           while (usedIds.has(finalId)) {
@@ -345,15 +346,16 @@ const precomputedRules: Rule[] = (() => {
           }
           rule.id = finalId
           usedIds.add(finalId)
-        })
-        allRules.push(...rules)
+          allRules.push(rule)
+        }
       } catch (error) {
         console.warn(`Failed to load rules from ${collection.name}:`, error)
       }
     }
   }
 
-  console.log(`Pre-loaded ${allRules.length} total rules for Vercel optimization`)
+  const endTime = performance.now()
+  console.log(`Pre-loaded ${allRules.length} total rules in ${(endTime - startTime).toFixed(2)}ms for Vercel optimization`)
   return allRules
 })()
 

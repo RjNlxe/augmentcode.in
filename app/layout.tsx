@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import PerformanceMonitor from '@/components/PerformanceMonitor'
 
 // Preload critical modules for Vercel free tier optimization
 import { getAllRules, getLanguages, getCategories } from '@/lib/rules-loader'
@@ -267,8 +268,28 @@ export default function RootLayout({
             dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
           />
         ))}
+
+        {/* Service Worker Registration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                      console.log('[SW] Registered successfully:', registration.scope);
+                    })
+                    .catch((error) => {
+                      console.log('[SW] Registration failed:', error);
+                    });
+                });
+              }
+            `
+          }}
+        />
       </head>
       <body className="min-h-screen overflow-x-hidden">
+        <PerformanceMonitor />
         {children}
       </body>
     </html>

@@ -144,26 +144,26 @@ ${rule.content}
     <main className="min-h-screen bg-black text-white flex font-space">
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-80 bg-gradient-to-b from-zinc-900 to-zinc-950 border-r border-emerald-500/20 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-80 bg-gradient-to-b from-zinc-900 to-zinc-950 border-r border-emerald-500/20 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
-          <div className="p-6 border-b border-emerald-500/20">
+          <div className="p-4 sm:p-6 border-b border-emerald-500/20">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-white" />
+              <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
                 </div>
-                <div>
-                  <h2 className="text-lg font-bold text-white">Browse Rules</h2>
-                  <p className="text-xs text-gray-400">Filter by language & category</p>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-base sm:text-lg font-bold text-white truncate">Browse Rules</h2>
+                  <p className="text-xs text-gray-400 hidden sm:block">Filter by language & category</p>
                 </div>
               </div>
               <button
                 onClick={() => setSidebarOpen(false)}
-                className="lg:hidden p-2 hover:bg-white/10 rounded-lg transition-colors"
+                className="lg:hidden p-1.5 sm:p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </div>
           </div>
@@ -309,97 +309,98 @@ ${rule.content}
 
       {/* Main Content */}
       <div className="flex-1 lg:ml-0">
-        <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 py-8 px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto relative z-10">
           {/* Mobile Menu Button */}
-          <div className="flex justify-between items-center mb-6 lg:hidden">
+          <div className="flex justify-between items-center mb-4 sm:mb-6 lg:hidden">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="flex items-center space-x-2 bg-emerald-500/20 border border-emerald-500/30 rounded-xl px-4 py-3 text-emerald-400 hover:bg-emerald-500/30 transition-all duration-200 shadow-lg"
+              className="flex items-center space-x-2 bg-emerald-500/20 border border-emerald-500/30 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-emerald-400 hover:bg-emerald-500/30 transition-all duration-200 shadow-lg text-sm sm:text-base"
             >
-              <Menu className="w-5 h-5" />
-              <span className="font-medium">Browse by Language & Category</span>
+              <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="font-medium hidden sm:inline">Browse by Language & Category</span>
+              <span className="font-medium sm:hidden">Browse Rules</span>
             </button>
           </div>
 
           {/* Navigation Header */}
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 space-y-3 sm:space-y-0">
             <Link
               href="/"
               className="group flex items-center space-x-2 text-gray-400 hover:text-emerald-400 transition-colors duration-200"
             >
-              <div className="w-8 h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center group-hover:bg-emerald-500/30 transition-colors">
-                <ChevronRight className="w-4 h-4 rotate-180" />
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-emerald-500/20 rounded-lg flex items-center justify-center group-hover:bg-emerald-500/30 transition-colors">
+                <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 rotate-180" />
               </div>
-              <span className="font-medium">Back to Home</span>
+              <span className="font-medium text-sm sm:text-base">Back to Home</span>
             </Link>
 
-            <div className="text-right">
-              <div className="text-sm text-gray-400">
+            <div className="text-left sm:text-right">
+              <div className="text-xs sm:text-sm text-gray-400">
                 Showing {filteredRules.length} of {allRules.length} rules
               </div>
             </div>
           </div>
 
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+          <div className="text-center mb-8 sm:mb-10 lg:mb-12 px-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold mb-3 sm:mb-4">
               <span className="bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 bg-clip-text text-transparent">
                 Rules Directory
               </span>
             </h1>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+            <p className="text-base sm:text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-6 sm:mb-8">
               Discover powerful coding rules and best practices for modern development
             </p>
 
             {/* Stats */}
-            <div className="flex items-center justify-center gap-4 md:gap-8 mb-8">
+            <div className="flex items-center justify-center gap-3 sm:gap-4 md:gap-8 mb-6 sm:mb-8">
               <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-emerald-400">{allRules.length}</div>
-                <div className="text-xs md:text-sm text-gray-400">Total Rules</div>
+                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-emerald-400">{allRules.length}</div>
+                <div className="text-xs sm:text-sm text-gray-400">Total Rules</div>
               </div>
-              <div className="w-px h-8 md:h-12 bg-emerald-500/30"></div>
+              <div className="w-px h-6 sm:h-8 md:h-12 bg-emerald-500/30"></div>
               <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-emerald-400">{languages.length - 1}</div>
-                <div className="text-xs md:text-sm text-gray-400">Languages</div>
+                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-emerald-400">{languages.length - 1}</div>
+                <div className="text-xs sm:text-sm text-gray-400">Languages</div>
               </div>
-              <div className="w-px h-8 md:h-12 bg-emerald-500/30"></div>
+              <div className="w-px h-6 sm:h-8 md:h-12 bg-emerald-500/30"></div>
               <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-emerald-400">{categories.length - 1}</div>
-                <div className="text-xs md:text-sm text-gray-400">Categories</div>
+                <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-emerald-400">{categories.length - 1}</div>
+                <div className="text-xs sm:text-sm text-gray-400">Categories</div>
               </div>
             </div>
 
             {/* Search Bar */}
-            <div className="relative max-w-2xl mx-auto mb-8">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-emerald-400 w-5 h-5" />
+            <div className="relative max-w-2xl mx-auto mb-6 sm:mb-8">
+              <Search className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-emerald-400 w-4 h-4 sm:w-5 sm:h-5" />
               <input
                 type="text"
                 placeholder="Search rules, tags, libraries..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 search-mono text-white placeholder-zinc-500 focus:outline-none transition-colors duration-200"
+                className="w-full pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 search-mono text-white placeholder-zinc-500 focus:outline-none transition-colors duration-200 text-sm sm:text-base"
               />
             </div>
 
             {/* Controls */}
-            <div className="flex items-center justify-center gap-3 mb-8">
+            <div className="flex items-center justify-center gap-3 mb-6 sm:mb-8">
               {/* View Controls */}
-              <div className="flex bg-white/5 rounded-xl p-1 border border-emerald-500/30">
+              <div className="flex bg-white/5 rounded-lg sm:rounded-xl p-1 border border-emerald-500/30">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded-lg transition-all duration-200 ${
+                  className={`p-1.5 sm:p-2 rounded-md sm:rounded-lg transition-all duration-200 ${
                     viewMode === 'grid' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <Grid className="w-4 h-4" />
+                  <Grid className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 rounded-lg transition-all duration-200 ${
+                  className={`p-1.5 sm:p-2 rounded-md sm:rounded-lg transition-all duration-200 ${
                     viewMode === 'list' ? 'bg-emerald-500 text-white shadow-lg' : 'text-gray-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <List className="w-4 h-4" />
+                  <List className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
               </div>
             </div>

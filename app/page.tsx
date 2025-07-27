@@ -1,16 +1,17 @@
 'use client'
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import { Search, Code2, ArrowRight, Zap, BookOpen, Palette, Brain, Globe, Rocket, Heart, Users } from 'lucide-react'
+import { useState, useEffect, useCallback, useMemo, memo } from 'react'
+import { Search, Code2, ArrowRight, Zap, BookOpen, Palette, Brain, Globe, Rocket, Heart, Users, X } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
 // Preload rules on client-side for instant navigation
 import { getAllRules, getLanguages, getCategories } from '@/lib/rules-loader'
 
-export default function Home() {
+const Home = memo(function Home() {
   const [searchQuery, setSearchQuery] = useState('')
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Preload rules data on component mount for instant navigation
   useEffect(() => {
@@ -150,10 +151,10 @@ export default function Home() {
       </div>
 
       {/* Header */}
-      <header className="relative z-10 p-6 md:p-8">
+      <header className="relative z-10 p-4 sm:p-6 md:p-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-4 group">
-            <div className="relative w-12 h-12 rounded-2xl overflow-hidden shadow-mono group-hover:scale-110 transition-transform duration-300 pulse-emerald">
+          <div className="flex items-center space-x-2 sm:space-x-4 group min-w-0 flex-1">
+            <div className="relative w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-mono group-hover:scale-110 transition-transform duration-300 pulse-emerald flex-shrink-0">
               <Image
                 src="/image.png"
                 alt="Augment Code Logo"
@@ -163,35 +164,35 @@ export default function Home() {
                 priority
               />
             </div>
-            <span className="text-3xl font-black visible-text font-code tracking-wider text-shadow-emerald">
+            <span className="text-lg sm:text-2xl md:text-3xl font-black visible-text font-code tracking-wider text-shadow-emerald truncate">
               augmentcode
             </span>
           </div>
 
           {/* Enhanced Navigation Container */}
-          <nav className="hidden md:flex items-center">
+          <nav className="hidden lg:flex items-center">
             <div className="nav-mono p-1.5">
               <Link
                 href="/rules"
-                className="group relative px-5 py-2.5 rounded-xl font-semibold visible-text transition-all duration-300 hover:scale-105 font-space"
+                className="group relative px-3 lg:px-5 py-2 lg:py-2.5 rounded-lg lg:rounded-xl font-semibold visible-text transition-all duration-300 hover:scale-105 font-space text-sm lg:text-base"
               >
-                <div className="absolute inset-0 bg-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-emerald-500/10 rounded-lg lg:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <span className="relative">Rules</span>
               </Link>
 
               <Link
                 href="/mcp"
-                className="group relative px-5 py-2.5 rounded-xl font-semibold visible-text transition-all duration-300 hover:scale-105 font-space"
+                className="group relative px-3 lg:px-5 py-2 lg:py-2.5 rounded-lg lg:rounded-xl font-semibold visible-text transition-all duration-300 hover:scale-105 font-space text-sm lg:text-base"
               >
-                <div className="absolute inset-0 bg-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-emerald-500/10 rounded-lg lg:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <span className="relative">MCP</span>
               </Link>
 
               <Link
                 href="/generate"
-                className="group relative px-5 py-2.5 rounded-xl font-semibold visible-text transition-all duration-300 hover:scale-105 font-space"
+                className="group relative px-3 lg:px-5 py-2 lg:py-2.5 rounded-lg lg:rounded-xl font-semibold visible-text transition-all duration-300 hover:scale-105 font-space text-sm lg:text-base"
               >
-                <div className="absolute inset-0 bg-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-emerald-500/10 rounded-lg lg:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <span className="relative">Generate</span>
               </Link>
 
@@ -199,31 +200,107 @@ export default function Home() {
                 href="https://augment.community"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center space-x-2 btn-emerald ml-2"
+                className="group inline-flex items-center space-x-1 lg:space-x-2 btn-emerald ml-2 text-sm lg:text-base px-3 lg:px-4 py-2"
               >
-                <Users className="w-4 h-4" />
-                <span>Community</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                <Users className="w-3 h-3 lg:w-4 lg:h-4" />
+                <span className="hidden sm:inline">Community</span>
+                <ArrowRight className="w-3 h-3 lg:w-4 lg:h-4 group-hover:translate-x-1 transition-transform duration-300" />
               </a>
             </div>
           </nav>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
-            <div className="nav-mono p-3">
-              <div className="w-6 h-6 flex flex-col justify-center space-y-1">
-                <div className="w-full h-0.5 bg-white rounded-full"></div>
-                <div className="w-full h-0.5 bg-white rounded-full"></div>
-                <div className="w-full h-0.5 bg-white rounded-full"></div>
+          <div className="lg:hidden">
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="nav-mono p-2 sm:p-3 touch-target"
+              aria-label="Toggle mobile menu"
+            >
+              <div className="w-5 h-5 sm:w-6 sm:h-6 flex flex-col justify-center space-y-1">
+                <div className={`w-full h-0.5 bg-white rounded-full transition-transform duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`}></div>
+                <div className={`w-full h-0.5 bg-white rounded-full transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`}></div>
+                <div className={`w-full h-0.5 bg-white rounded-full transition-transform duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`}></div>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </header>
 
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div
+            className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="absolute top-0 right-0 w-64 h-full bg-zinc-950 border-l border-emerald-500/20 shadow-2xl">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-8">
+                <span className="text-lg font-bold text-white">Menu</span>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              </div>
+
+              <nav className="space-y-4">
+                <Link
+                  href="/rules"
+                  className="block px-4 py-3 rounded-xl text-white hover:bg-emerald-500/20 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="flex items-center space-x-3">
+                    <BookOpen className="w-5 h-5" />
+                    <span>Rules</span>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/mcp"
+                  className="block px-4 py-3 rounded-xl text-white hover:bg-emerald-500/20 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="flex items-center space-x-3">
+                    <Zap className="w-5 h-5" />
+                    <span>MCP</span>
+                  </div>
+                </Link>
+
+                <Link
+                  href="/generate"
+                  className="block px-4 py-3 rounded-xl text-white hover:bg-emerald-500/20 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="flex items-center space-x-3">
+                    <Code2 className="w-5 h-5" />
+                    <span>Generate</span>
+                  </div>
+                </Link>
+
+                <a
+                  href="https://augment.community"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block px-4 py-3 rounded-xl text-white hover:bg-emerald-500/20 transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="flex items-center space-x-3">
+                    <Users className="w-5 h-5" />
+                    <span>Community</span>
+                    <ArrowRight className="w-4 h-4 ml-auto" />
+                  </div>
+                </a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Hero Section */}
-      <div className="relative z-10 flex-1 flex items-center justify-center px-6 md:px-8 py-20">
-        <div className="max-w-6xl mx-auto">
+      <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20">
+        <div className="max-w-6xl mx-auto w-full">
 
           {/* Enhanced Hero Container */}
           <div className="relative">
@@ -231,11 +308,11 @@ export default function Home() {
             <div className="hero-mono" />
 
             {/* Content */}
-            <div className="relative p-12 md:p-16 text-center space-y-12">
+            <div className="relative p-6 sm:p-8 md:p-12 lg:p-16 text-center space-y-8 sm:space-y-10 md:space-y-12">
               {/* Main Hero */}
-              <div className="space-y-8 animate-fade-in">
-                <div className="space-y-6">
-                  <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-tight tracking-tight font-space">
+              <div className="space-y-6 sm:space-y-8 animate-fade-in">
+                <div className="space-y-4 sm:space-y-6">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-black leading-tight tracking-tight font-space">
                     <span className="inline-block visible-text animate-slide-up text-shadow-lg">
                       Join the
                     </span>
@@ -245,26 +322,27 @@ export default function Home() {
                     </span>
                   </h1>
 
-                  <p className="text-xl md:text-2xl text-zinc-300 max-w-4xl mx-auto leading-relaxed font-light animate-fade-in-delay font-space">
+                  <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-zinc-300 max-w-4xl mx-auto leading-relaxed font-light animate-fade-in-delay font-space px-4">
                     Discover powerful coding rules and cutting-edge patterns
                   </p>
                 </div>
 
                 {/* Enhanced Search Bar */}
-                <div className="max-w-2xl mx-auto animate-scale-in">
+                <div className="max-w-2xl mx-auto animate-scale-in px-4">
                   <div className="relative group">
-                    <div className="search-mono p-1.5">
+                    <div className="search-mono p-1 sm:p-1.5">
                       <div className="flex items-center">
-                        <Search className="ml-5 text-emerald-400 w-6 h-6" />
+                        <Search className="ml-3 sm:ml-5 text-emerald-400 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 flex-shrink-0" />
                         <input
                           type="text"
                           placeholder="Search rules, patterns, frameworks..."
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          className="flex-1 px-4 py-4 bg-transparent visible-text placeholder-zinc-500 focus:outline-none text-lg font-space"
+                          className="flex-1 px-2 sm:px-4 py-3 sm:py-4 bg-transparent visible-text placeholder-zinc-500 focus:outline-none text-sm sm:text-base md:text-lg font-space min-w-0"
                         />
-                        <button className="btn-emerald">
-                          Search
+                        <button className="btn-emerald text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 ml-2">
+                          <span className="hidden sm:inline">Search</span>
+                          <span className="sm:hidden">Go</span>
                         </button>
                       </div>
                     </div>
@@ -272,22 +350,22 @@ export default function Home() {
                 </div>
 
                 {/* Enhanced CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6 animate-fade-in-delay-2">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6 animate-fade-in-delay-2 px-4">
                   <Link
                     href="/rules"
-                    className="group relative inline-flex items-center space-x-3 btn-emerald"
+                    className="group relative inline-flex items-center space-x-2 sm:space-x-3 btn-emerald w-full sm:w-auto justify-center text-sm sm:text-base md:text-lg"
                   >
-                    <BookOpen className="w-5 h-5" />
-                    <span className="text-lg font-space">Explore Rules</span>
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                    <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="font-space">Explore Rules</span>
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </Link>
 
                   <Link
                     href="/mcp"
-                    className="group inline-flex items-center space-x-3 btn-mono-outline"
+                    className="group inline-flex items-center space-x-2 sm:space-x-3 btn-mono-outline w-full sm:w-auto justify-center text-sm sm:text-base md:text-lg"
                   >
-                    <Zap className="w-5 h-5" />
-                    <span className="text-lg font-space">MCP Integration</span>
+                    <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="font-space">MCP Integration</span>
                   </Link>
                 </div>
               </div>
@@ -295,17 +373,17 @@ export default function Home() {
           </div>
 
           {/* Enhanced Featured Rules */}
-          <div className="space-y-12 animate-fade-in-delay-3 mt-16">
-            <div className="text-center space-y-4">
-              <h2 className="text-2xl md:text-3xl font-bold visible-text font-space">
+          <div className="space-y-8 sm:space-y-10 md:space-y-12 animate-fade-in-delay-3 mt-12 sm:mt-14 md:mt-16">
+            <div className="text-center space-y-3 sm:space-y-4 px-4">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold visible-text font-space">
                 Featured <span className="text-emerald-400">Rules</span>
               </h2>
-              <p className="text-sm text-zinc-400 max-w-2xl mx-auto font-space">
+              <p className="text-xs sm:text-sm text-zinc-400 max-w-2xl mx-auto font-space">
                 Handpicked coding patterns that will transform your development workflow
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 px-4">
               {featuredRules.map((rule, index) => (
                 <div
                   key={index}
@@ -316,26 +394,26 @@ export default function Home() {
                   onClick={() => handleRuleClick(rule)}
                 >
                   {/* Enhanced Card with Fixed Height */}
-                  <div className="card-emerald h-full min-h-[160px] flex flex-col">
+                  <div className="card-emerald h-full min-h-[140px] sm:min-h-[160px] flex flex-col">
                     {/* Icon with emerald glow */}
-                    <div className="w-10 h-10 bg-zinc-800 hover:bg-emerald-500/20 rounded-xl flex items-center justify-center mb-3 text-emerald-400 shadow-mono group-hover:scale-110 transition-all duration-300 group-hover:text-emerald-300">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-zinc-800 hover:bg-emerald-500/20 rounded-lg sm:rounded-xl flex items-center justify-center mb-2 sm:mb-3 text-emerald-400 shadow-mono group-hover:scale-110 transition-all duration-300 group-hover:text-emerald-300">
                       {rule.icon}
                     </div>
 
                     {/* Content - Flex grow to fill space */}
                     <div className="flex-1 flex flex-col">
-                      <h3 className="text-sm font-bold visible-text mb-2 group-hover:text-emerald-200 transition-colors duration-300 font-space">
+                      <h3 className="text-xs sm:text-sm font-bold visible-text mb-1 sm:mb-2 group-hover:text-emerald-200 transition-colors duration-300 font-space line-clamp-2">
                         {rule.title}
                       </h3>
 
-                      <p className="text-zinc-400 text-xs leading-relaxed group-hover:text-zinc-300 transition-colors duration-300 font-space flex-1">
+                      <p className="text-zinc-400 text-xs leading-relaxed group-hover:text-zinc-300 transition-colors duration-300 font-space flex-1 line-clamp-3">
                         {rule.description}
                       </p>
 
                       {/* Enhanced Arrow - Always at bottom */}
-                      <div className="mt-3 flex justify-end">
-                        <div className="w-6 h-6 bg-zinc-800 rounded-full flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-black transition-all duration-300 group-hover:scale-110">
-                          <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-all duration-300" />
+                      <div className="mt-2 sm:mt-3 flex justify-end">
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-zinc-800 rounded-full flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-black transition-all duration-300 group-hover:scale-110">
+                          <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover:translate-x-0.5 transition-all duration-300" />
                         </div>
                       </div>
                     </div>
@@ -345,13 +423,13 @@ export default function Home() {
             </div>
 
             {/* Enhanced View All Button */}
-            <div className="text-center pt-8">
+            <div className="text-center pt-6 sm:pt-8 px-4">
               <Link
                 href="/rules"
-                className="group inline-flex items-center space-x-2 btn-mono-outline"
+                className="group inline-flex items-center space-x-2 btn-mono-outline text-sm sm:text-base"
               >
-                <span className="text-sm font-space">View All Rules</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                <span className="font-space">View All Rules</span>
+                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </div>
           </div>
@@ -360,13 +438,15 @@ export default function Home() {
       </div>
 
       {/* Enhanced Footer */}
-      <footer className="relative z-10 p-8 border-t border-emerald-500/20">
+      <footer className="relative z-10 p-4 sm:p-6 md:p-8 border-t border-emerald-500/20">
         <div className="max-w-7xl mx-auto text-center">
-          <p className="text-zinc-400 text-lg flex items-center justify-center space-x-2 font-space">
+          <div className="text-zinc-400 text-sm sm:text-base md:text-lg flex flex-col sm:flex-row items-center justify-center space-y-1 sm:space-y-0 sm:space-x-2 font-space">
             <span>© 2025 augmentcode.in. Built with</span>
-            <Heart className="w-5 h-5 text-emerald-400 animate-pulse" />
-            <span>by the Augment community.</span>
-          </p>
+            <div className="flex items-center space-x-2">
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 animate-pulse" />
+              <span>by the Augment community.</span>
+            </div>
+          </div>
         </div>
       </footer>
 
@@ -431,4 +511,6 @@ export default function Home() {
       `}</style>
     </main>
   )
-}
+})
+
+export default Home

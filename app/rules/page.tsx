@@ -349,7 +349,6 @@ ${rule.content}
                   </div>
                 </div>
               </div>
-            </div>
 
             {/* Active Filters */}
             {(selectedLanguage !== 'All' || selectedCategory !== 'All' || searchQuery) && (

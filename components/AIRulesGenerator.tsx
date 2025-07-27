@@ -115,42 +115,99 @@ export default function AIRulesGenerator({ isOpen, onClose }: AIRulesGeneratorPr
     const currentComplexity = getCurrentValue('complexity')
     const currentFocus = getCurrentValue('focus')
 
-    return `You are a senior software architect. Create a comprehensive Project Requirements Document (PRD) for a ${currentLanguage} ${currentCategory} project. Focus on ${currentFocus}.
+    return `You are an expert ${currentLanguage} developer and coding standards specialist. Generate comprehensive coding rules and best practices for ${currentLanguage} development, specifically focused on ${currentCategory} and ${currentFocus}.
 
-Project Context: ${formData.context || 'Modern web application'}
-Specific Requirements: ${formData.customPrompt || 'Standard development practices'}
+Project Context: ${formData.context || 'Modern development practices'}
+Specific Requirements: ${formData.customPrompt || 'Industry-standard coding guidelines'}
 
-Write a complete PRD document in markdown format. Include actual content, not templates. Generate specific examples, real code snippets, and actionable guidelines.
+Create a detailed coding rules document in markdown format that follows the same structure as professional coding standards. Include real, actionable rules with specific code examples.
 
-Structure the document as follows:
+Generate the rules in this exact format:
 
-# Project Requirements Document
+# ${currentLanguage} ${currentCategory} Coding Rules
 
-## 1. Project Overview
-Write a detailed project description, target users, business goals, and success metrics.
+## Core Principles
+- List 5-8 fundamental principles for ${currentLanguage} ${currentCategory} development
+- Focus on ${currentFocus} throughout
 
-## 2. Technical Stack & Architecture
-Detail the ${currentLanguage} technology stack, system architecture, database design, and API structure.
+## File Structure & Organization
+- Provide specific directory structure recommendations
+- File naming conventions
+- Module organization patterns
+- Import/export best practices
 
-## 3. Coding Standards & Rules
-Provide specific ${currentLanguage} coding conventions, file organization, naming patterns, and code quality rules.
+## Code Style & Formatting
+- Indentation and spacing rules
+- Naming conventions (variables, functions, classes, constants)
+- Comment and documentation standards
+- Line length and code organization
 
-## 4. Development Guidelines
-Include testing strategies, code review processes, documentation standards, and development workflows.
+## ${currentFocus} Best Practices
+- Specific rules for ${currentFocus} in ${currentLanguage}
+- Performance optimization techniques
+- Memory management guidelines
+- Error handling patterns
 
-## 5. Feature Specifications
-List core features with detailed user stories, acceptance criteria, and technical requirements.
+## Code Examples
+Provide 3-5 concrete code examples showing:
+- ✅ Good practices (DO)
+- ❌ Bad practices (DON'T)
+- Include explanations for each example
 
-## 6. Performance & Security
-Define performance benchmarks, security requirements, and compliance standards.
+## Testing Guidelines
+- Unit testing patterns for ${currentLanguage}
+- Test file organization
+- Mocking and testing best practices
+- Coverage requirements
 
-## 7. Implementation Roadmap
-Create a phased development plan with timelines, milestones, and resource allocation.
+## Security & Performance
+- Security best practices specific to ${currentLanguage}
+- Performance optimization rules
+- Common pitfalls to avoid
+- Monitoring and debugging guidelines
 
-## 8. Quality Assurance
-Establish testing protocols, deployment procedures, and monitoring strategies.
+## Dependencies & Libraries
+- Recommended libraries for ${currentCategory}
+- Dependency management best practices
+- Version control and updates
+- Package.json/requirements management
 
-Generate real, actionable content for each section. Include code examples in ${currentLanguage}. Make it comprehensive and ready to use immediately. Focus heavily on ${currentFocus} throughout the document.`
+## Development Workflow
+- Git workflow recommendations
+- Code review checklist
+- CI/CD integration guidelines
+- Documentation requirements
+
+Make each rule specific, actionable, and include real code examples. Focus heavily on ${currentFocus} and ${currentComplexity} level practices. Generate content that developers can immediately apply to their ${currentLanguage} projects.`
+  }
+
+  const generateRuleWithNvidia = async (prompt: string) => {
+    const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer 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',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'moonshotai/kimi-k2-instruct',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 4000,
+        stream: false
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`NVIDIA API error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+    return data.choices[0].message.content
   }
 
   const generateRule = async () => {
@@ -165,12 +222,47 @@ Generate real, actionable content for each section. Include code examples in ${c
     setIsGenerating(true)
     try {
       const systemPrompt = generateSystemPrompt()
-      const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(systemPrompt)}`)
-      const rule = await response.text()
-      setGeneratedRule(rule)
+      let rule = ''
+
+      // Try Pollinations AI first
+      try {
+        console.log('Trying Pollinations AI API...')
+        const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(systemPrompt)}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'text/plain',
+          }
+        })
+
+        if (response.ok) {
+          rule = await response.text()
+          if (rule && rule.trim().length > 0) {
+            console.log('✅ Pollinations AI successful')
+            setGeneratedRule(rule)
+            return
+          }
+        }
+        throw new Error('Pollinations API failed or returned empty response')
+      } catch (pollinationsError) {
+        console.log('❌ Pollinations AI failed, trying NVIDIA API backup...')
+
+        // Fallback to NVIDIA API
+        try {
+          rule = await generateRuleWithNvidia(systemPrompt)
+          if (rule && rule.trim().length > 0) {
+            console.log('✅ NVIDIA API backup successful')
+            setGeneratedRule(rule)
+            return
+          }
+          throw new Error('NVIDIA API returned empty response')
+        } catch (nvidiaError) {
+          console.error('❌ Both APIs failed:', { pollinationsError, nvidiaError })
+          throw new Error('Both Pollinations and NVIDIA APIs failed. Please try again later.')
+        }
+      }
     } catch (error) {
       console.error('Error generating rule:', error)
-      alert('Failed to generate PRD. Please try again.')
+      alert(`Failed to generate coding rules: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`)
     } finally {
       setIsGenerating(false)
     }
@@ -178,15 +270,19 @@ Generate real, actionable content for each section. Include code examples in ${c
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(generatedRule)
-    alert('PRD copied to clipboard!')
+    alert('Coding rules copied to clipboard!')
   }
 
   const downloadRule = () => {
+    const currentLanguage = getCurrentValue('language')
+    const currentCategory = getCurrentValue('category')
+    const fileName = `${currentLanguage.toLowerCase().replace(/[^a-z0-9]/g, '-')}-${currentCategory.toLowerCase().replace(/[^a-z0-9]/g, '-')}-rules.mdc`
+
     const blob = new Blob([generatedRule], { type: 'text/markdown' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'prd.md'
+    a.download = fileName
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -323,9 +419,9 @@ Generate real, actionable content for each section. Include code examples in ${c
               </div>
               <div>
                 <h1 className="text-4xl font-black bg-gradient-to-r from-white via-emerald-200 to-cyan-200 bg-clip-text text-transparent">
-                  AI PRD Generator
+                  AI Rules Generator
                 </h1>
-                <p className="text-xl text-gray-300 mt-1">Generate complete project requirements with coding rules & technical specs</p>
+                <p className="text-xl text-gray-300 mt-1">Generate comprehensive coding rules and best practices for any language</p>
               </div>
             </div>
             <button
@@ -423,12 +519,12 @@ Generate real, actionable content for each section. Include code examples in ${c
                     {isGenerating ? (
                       <>
                         <RefreshCw className="w-6 h-6 animate-spin" />
-                        <span>Generating Complete PRD...</span>
+                        <span>Generating Coding Rules...</span>
                       </>
                     ) : (
                       <>
                         <Brain className="w-6 h-6" />
-                        <span>Generate PRD with AI</span>
+                        <span>Generate Rules with AI</span>
                         <Wand2 className="w-6 h-6" />
                       </>
                     )}
@@ -467,9 +563,9 @@ Generate real, actionable content for each section. Include code examples in ${c
                       <div className="w-8 h-8 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-xl flex items-center justify-center">
                         <Sparkles className="w-5 h-5 text-white" />
                       </div>
-                      <span>Generated PRD</span>
+                      <span>Generated Coding Rules</span>
                     </h3>
-                    <p className="text-gray-400">Your comprehensive project requirements document is ready!</p>
+                    <p className="text-gray-400">Your comprehensive coding rules and best practices are ready!</p>
                   </div>
                   <div className="bg-black/20 border border-white/10 rounded-2xl p-6 max-h-96 overflow-y-auto">
                     <pre className="text-gray-200 whitespace-pre-wrap font-mono text-sm leading-relaxed">
@@ -493,7 +589,7 @@ Generate real, actionable content for each section. Include code examples in ${c
                 <div className="space-y-4">
                   <h3 className="text-3xl font-bold text-white">Ready to Create Magic</h3>
                   <p className="text-xl text-gray-300 max-w-md leading-relaxed">
-                    Configure your project details and let AI generate a comprehensive PRD with coding rules and technical specifications
+                    Configure your language and focus area to generate comprehensive coding rules and best practices
                   </p>
                   <div className="flex items-center justify-center space-x-2 text-emerald-400">
                     <Wand2 className="w-5 h-5" />

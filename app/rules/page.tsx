@@ -460,7 +460,7 @@ ${rule.content}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-purple-700 rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
                 <Brain className="relative w-5 h-5" />
-                <span className="relative">AI PRD</span>
+                <span className="relative">AI Rules</span>
                 <Wand2 className="relative w-5 h-5" />
               </button>
             </div>

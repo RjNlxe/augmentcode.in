@@ -178,6 +178,35 @@ Generate a complete, professional PRD document in markdown format. Include real,
 Make this document comprehensive, professional, and immediately actionable. Include specific code examples in ${formData.primaryLanguage} where relevant. Focus on practical implementation details that a development team can follow directly.`
   }
 
+  const generatePRDWithNvidia = async (prompt: string) => {
+    const response = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer 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',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'moonshotai/kimi-k2-instruct',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 4000,
+        stream: false
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`NVIDIA API error! status: ${response.status}`)
+    }
+
+    const data = await response.json()
+    return data.choices[0].message.content
+  }
+
   const generatePRD = async () => {
     if (!formData.projectName.trim() || !formData.projectDescription.trim()) {
       alert('Please provide at least a project name and description')
@@ -187,13 +216,49 @@ Make this document comprehensive, professional, and immediately actionable. Incl
     setIsGenerating(true)
     try {
       const systemPrompt = generateSystemPrompt()
-      const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(systemPrompt)}`)
-      const prdContent = await response.text()
-      setGeneratedPRD(prdContent)
-      setShowPreview(true)
+      let prdContent = ''
+
+      // Try Pollinations AI first
+      try {
+        console.log('Trying Pollinations AI API...')
+        const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(systemPrompt)}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'text/plain',
+          }
+        })
+
+        if (response.ok) {
+          prdContent = await response.text()
+          if (prdContent && prdContent.trim().length > 0) {
+            console.log('✅ Pollinations AI successful')
+            setGeneratedPRD(prdContent)
+            setShowPreview(true)
+            return
+          }
+        }
+        throw new Error('Pollinations API failed or returned empty response')
+      } catch (pollinationsError) {
+        console.log('❌ Pollinations AI failed, trying NVIDIA API backup...')
+
+        // Fallback to NVIDIA API
+        try {
+          prdContent = await generatePRDWithNvidia(systemPrompt)
+          if (prdContent && prdContent.trim().length > 0) {
+            console.log('✅ NVIDIA API backup successful')
+            setGeneratedPRD(prdContent)
+            setShowPreview(true)
+            return
+          }
+          throw new Error('NVIDIA API returned empty response')
+        } catch (nvidiaError) {
+          console.error('❌ Both APIs failed:', { pollinationsError, nvidiaError })
+          throw new Error('Both Pollinations and NVIDIA APIs failed. Please try again later.')
+        }
+      }
     } catch (error) {
       console.error('Error generating PRD:', error)
-      alert('Failed to generate PRD. Please try again.')
+      alert(`Failed to generate PRD: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`)
     } finally {
       setIsGenerating(false)
     }

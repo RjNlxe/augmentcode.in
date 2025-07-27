@@ -258,7 +258,7 @@ Make this document comprehensive, professional, and immediately actionable. Incl
       }
     } catch (error) {
       console.error('Error generating PRD:', error)
-      alert(`Failed to generate PRD: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`)
+      // Silently handle errors - no alert notifications
     } finally {
       setIsGenerating(false)
     }

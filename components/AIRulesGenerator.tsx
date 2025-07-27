@@ -262,7 +262,7 @@ Make each rule specific, actionable, and include real code examples. Focus heavi
       }
     } catch (error) {
       console.error('Error generating rule:', error)
-      alert(`Failed to generate coding rules: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`)
+      // Silently handle errors - no alert notifications
     } finally {
       setIsGenerating(false)
     }

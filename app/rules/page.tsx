@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Filter, Code, Star, Download, Copy, ChevronDown, X, Grid, List, BookOpen, Zap, Tag, Eye, FileDown, Menu, Sparkles, Layers } from 'lucide-react'
+import { Search, Filter, Code, Star, Download, Copy, ChevronDown, X, Grid, List, BookOpen, Zap, Tag, Eye, FileDown, Menu, Sparkles, Layers, ChevronRight } from 'lucide-react'
 import { getAllRules, getLanguages, getCategories, type Rule } from '@/lib/rules-loader'
 
 
@@ -14,7 +14,9 @@ export default function RulesPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedRule, setSelectedRule] = useState<Rule | null>(null)
   const [sortBy, setSortBy] = useState<'name' | 'rating' | 'downloads'>('name')
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [languagesExpanded, setLanguagesExpanded] = useState(true)
+  const [categoriesExpanded, setCategoriesExpanded] = useState(true)
 
   // Modal scroll lock effect
   useEffect(() => {
@@ -136,57 +138,165 @@ ${rule.content}
             </div>
           </div>
 
-          {/* Quick Filters */}
-          <div className="p-6 space-y-6 flex-1 overflow-y-auto">
-            {/* Languages */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center">
-                <Code className="w-4 h-4 mr-2 text-emerald-400" />
-                Languages
-              </h3>
-              <div className="space-y-2">
-                {languages.map((language) => (
-                  <button
-                    key={language}
-                    onClick={() => setSelectedLanguage(language)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
-                      selectedLanguage === language
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                        : 'text-gray-400 hover:text-white hover:bg-white/5'
-                    }`}
+          {/* Enhanced Filters */}
+          <div className="p-6 space-y-4 flex-1 overflow-y-auto">
+            {/* Languages Section */}
+            <div className="bg-white/5 rounded-xl border border-emerald-500/20">
+              <button
+                onClick={() => setLanguagesExpanded(!languagesExpanded)}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors rounded-xl"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
+                    <Code className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-white">Languages</h3>
+                    <p className="text-xs text-gray-400">{languages.length - 1} available</p>
+                  </div>
+                </div>
+                <motion.div
+                  animate={{ rotate: languagesExpanded ? 90 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                </motion.div>
+              </button>
+
+              <AnimatePresence>
+                {languagesExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
                   >
-                    {language}
-                    <span className="float-right text-xs opacity-60">
-                      {language === 'All' ? allRules.length : allRules.filter(r => r.language === language).length}
-                    </span>
-                  </button>
-                ))}
-              </div>
+                    <div className="px-4 pb-4 space-y-1">
+                      {languages.map((language) => (
+                        <motion.button
+                          key={language}
+                          onClick={() => setSelectedLanguage(language)}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all duration-200 flex items-center justify-between group ${
+                            selectedLanguage === language
+                              ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-lg'
+                              : 'text-gray-400 hover:text-white hover:bg-white/10'
+                          }`}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <span className="font-medium">{language}</span>
+                          <span className={`text-xs px-2 py-1 rounded-full ${
+                            selectedLanguage === language
+                              ? 'bg-emerald-500/30 text-emerald-300'
+                              : 'bg-gray-700 text-gray-400 group-hover:bg-gray-600'
+                          }`}>
+                            {language === 'All' ? allRules.length : allRules.filter(r => r.language === language).length}
+                          </span>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
-            {/* Categories */}
-            <div>
-              <h3 className="text-sm font-semibold text-gray-300 mb-3 flex items-center">
-                <Layers className="w-4 h-4 mr-2 text-green-400" />
-                Categories
+            {/* Categories Section */}
+            <div className="bg-white/5 rounded-xl border border-green-500/20">
+              <button
+                onClick={() => setCategoriesExpanded(!categoriesExpanded)}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors rounded-xl"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
+                    <Layers className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-white">Categories</h3>
+                    <p className="text-xs text-gray-400">{categories.length - 1} available</p>
+                  </div>
+                </div>
+                <motion.div
+                  animate={{ rotate: categoriesExpanded ? 90 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <ChevronRight className="w-4 h-4 text-gray-400" />
+                </motion.div>
+              </button>
+
+              <AnimatePresence>
+                {categoriesExpanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-4 pb-4 space-y-1">
+                      {categories.map((category) => (
+                        <motion.button
+                          key={category}
+                          onClick={() => setSelectedCategory(category)}
+                          className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all duration-200 flex items-center justify-between group ${
+                            selectedCategory === category
+                              ? 'bg-green-500/20 text-green-400 border border-green-500/30 shadow-lg'
+                              : 'text-gray-400 hover:text-white hover:bg-white/10'
+                          }`}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                        >
+                          <span className="font-medium">{category}</span>
+                          <span className={`text-xs px-2 py-1 rounded-full ${
+                            selectedCategory === category
+                              ? 'bg-green-500/30 text-green-300'
+                              : 'bg-gray-700 text-gray-400 group-hover:bg-gray-600'
+                          }`}>
+                            {category === 'All' ? allRules.length : allRules.filter(r => r.category === category).length}
+                          </span>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="bg-white/5 rounded-xl border border-teal-500/20 p-4">
+              <h3 className="text-sm font-semibold text-white mb-3 flex items-center">
+                <Zap className="w-4 h-4 mr-2 text-teal-400" />
+                Quick Actions
               </h3>
               <div className="space-y-2">
-                {categories.map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all duration-200 ${
-                      selectedCategory === category
-                        ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                        : 'text-gray-400 hover:text-white hover:bg-white/5'
-                    }`}
-                  >
-                    {category}
-                    <span className="float-right text-xs opacity-60">
-                      {category === 'All' ? allRules.length : allRules.filter(r => r.category === category).length}
-                    </span>
-                  </button>
-                ))}
+                <button
+                  onClick={() => {
+                    setSelectedLanguage('All')
+                    setSelectedCategory('All')
+                    setSearchQuery('')
+                  }}
+                  className="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-200"
+                >
+                  🔄 Reset All Filters
+                </button>
+                <button
+                  onClick={() => setSelectedLanguage('TypeScript')}
+                  className="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-200"
+                >
+                  ⚡ TypeScript Rules
+                </button>
+                <button
+                  onClick={() => setSelectedLanguage('JavaScript')}
+                  className="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-200"
+                >
+                  🚀 JavaScript Rules
+                </button>
+                <button
+                  onClick={() => setSelectedLanguage('Python')}
+                  className="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/10 transition-all duration-200"
+                >
+                  🐍 Python Rules
+                </button>
               </div>
             </div>
           </div>
@@ -215,13 +325,15 @@ ${rule.content}
         <div className="max-w-7xl mx-auto relative z-10">
           {/* Mobile Menu Button */}
           <div className="flex justify-between items-center mb-6 lg:hidden">
-            <button
+            <motion.button
               onClick={() => setSidebarOpen(true)}
-              className="flex items-center space-x-2 bg-emerald-500/20 border border-emerald-500/30 rounded-xl px-4 py-2 text-emerald-400 hover:bg-emerald-500/30 transition-colors"
+              className="flex items-center space-x-2 bg-emerald-500/20 border border-emerald-500/30 rounded-xl px-4 py-3 text-emerald-400 hover:bg-emerald-500/30 transition-all duration-200 shadow-lg"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               <Menu className="w-5 h-5" />
-              <span>Filters</span>
-            </button>
+              <span className="font-medium">Browse by Language & Category</span>
+            </motion.button>
           </div>
 
           <motion.div

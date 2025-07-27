@@ -86,7 +86,7 @@ export default function Home() {
             transition={{ delay: 0.6, duration: 0.8 }}
           >
             <Suspense fallback={<div className="h-32 bg-dark-900 rounded-2xl animate-pulse" />}>
-              <CountdownTimer targetDate="2025-07-26T21:30:00+05:30" />
+              <CountdownTimer targetDate="2025-07-27T21:30:00+05:30" />
             </Suspense>
           </motion.div>
 

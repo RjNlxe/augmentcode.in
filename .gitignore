@@ -41,7 +41,6 @@ lighthouse-report.html
 /seo-reports/
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo

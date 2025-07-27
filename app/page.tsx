@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { Code2, Sparkles, ArrowRight, Heart, ExternalLink } from 'lucide-react'
 import Image from 'next/image'
-import CountdownTimer from '@/components/CountdownTimer'
+
 import AnimatedBackground from '@/components/AnimatedBackground'
 import FloatingElements from '@/components/FloatingElements'
 
@@ -62,11 +62,11 @@ export default function Home() {
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight">
               <span className="gradient-text text-shadow-lg">
-                🚀 We're Launching!
+                🎉 Platform Launched!
               </span>
               <br />
               <span className="text-white text-shadow text-3xl md:text-4xl lg:text-5xl">
-                12 Hours Left Until Launch
+                Augment Code Community Platform
               </span>
             </h1>
 
@@ -81,15 +81,21 @@ export default function Home() {
 
 
 
-          {/* Countdown Timer */}
+          {/* Launch Status */}
           <motion.div
+            className="mb-8"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
           >
-            <Suspense fallback={<div className="h-32 bg-dark-900 rounded-2xl animate-pulse" />}>
-              <CountdownTimer targetDate="2025-07-27T21:30:00+05:30" />
-            </Suspense>
+            <div className="glass-effect p-6 rounded-2xl max-w-2xl mx-auto">
+              <h3 className="text-2xl font-semibold mb-3 text-center gradient-text">
+                🎉 Platform is Live!
+              </h3>
+              <p className="text-gray-300 text-center">
+                Explore our comprehensive rules directory, discover powerful coding patterns, and enhance your development workflow with the best practices from the Augment Code community.
+              </p>
+            </div>
           </motion.div>
 
           {/* Action Buttons */}

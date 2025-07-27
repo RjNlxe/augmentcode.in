@@ -3,83 +3,8 @@
 import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Filter, Code, Star, Download, Copy, ChevronDown, X } from 'lucide-react'
+import { getAllRules, getLanguages, getCategories, type Rule } from '@/lib/rules-loader'
 
-// Sample rules data - this would come from your actual rules directory
-const rulesData = [
-  {
-    id: 1,
-    title: "Smart Code Completion",
-    description: "Intelligent autocomplete that understands context and provides accurate suggestions",
-    language: "JavaScript",
-    category: "Productivity",
-    rating: 4.9,
-    downloads: 15420,
-    code: `// Smart completion rule
-{
-  "trigger": "function",
-  "completion": "function ${1:name}(${2:params}) {\\n\\t${3:// code}\\n}"
-}`
-  },
-  {
-    id: 2,
-    title: "React Component Generator",
-    description: "Quickly generate React functional components with TypeScript support",
-    language: "TypeScript",
-    category: "React",
-    rating: 4.8,
-    downloads: 12350,
-    code: `// React component rule
-{
-  "trigger": "rfc",
-  "completion": "const ${1:ComponentName} = () => {\\n\\treturn (\\n\\t\\t<div>\\n\\t\\t\\t${2:content}\\n\\t\\t</div>\\n\\t)\\n}"
-}`
-  },
-  {
-    id: 3,
-    title: "Python Class Template",
-    description: "Generate Python classes with common methods and docstrings",
-    language: "Python",
-    category: "Templates",
-    rating: 4.7,
-    downloads: 9870,
-    code: `# Python class rule
-{
-  "trigger": "class",
-  "completion": "class ${1:ClassName}:\\n\\t\\"\\"\\"${2:Class description}\\"\\"\\"\\n\\t\\n\\tdef __init__(self${3:, args}):\\n\\t\\t${4:pass}"
-}`
-  },
-  {
-    id: 4,
-    title: "API Endpoint Builder",
-    description: "Create REST API endpoints with proper error handling",
-    language: "Node.js",
-    category: "Backend",
-    rating: 4.9,
-    downloads: 18200,
-    code: `// API endpoint rule
-{
-  "trigger": "api",
-  "completion": "app.${1:get}('/${2:endpoint}', async (req, res) => {\\n\\ttry {\\n\\t\\t${3:// logic}\\n\\t\\tres.json({ success: true });\\n\\t} catch (error) {\\n\\t\\tres.status(500).json({ error: error.message });\\n\\t}\\n});"
-}`
-  },
-  {
-    id: 5,
-    title: "CSS Flexbox Layout",
-    description: "Quick flexbox layouts with common patterns",
-    language: "CSS",
-    category: "Styling",
-    rating: 4.6,
-    downloads: 7650,
-    code: `/* Flexbox rule */
-{
-  "trigger": "flex",
-  "completion": ".${1:container} {\\n\\tdisplay: flex;\\n\\tjustify-content: ${2:center};\\n\\talign-items: ${3:center};\\n\\tgap: ${4:1rem};\\n}"
-}`
-  }
-]
-
-const languages = ["All", "JavaScript", "TypeScript", "Python", "Node.js", "CSS", "HTML", "Java", "C++", "Go", "Rust"]
-const categories = ["All", "Productivity", "React", "Templates", "Backend", "Styling", "Frontend", "Database"]
 
 export default function RulesPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -87,20 +12,27 @@ export default function RulesPage() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [isLanguageOpen, setIsLanguageOpen] = useState(false)
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
-  const [copiedId, setCopiedId] = useState<number | null>(null)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+
+  // Load actual rules from your directory
+  const allRules = getAllRules()
+  const languages = getLanguages()
+  const categories = getCategories()
 
   const filteredRules = useMemo(() => {
-    return rulesData.filter(rule => {
+    return allRules.filter(rule => {
       const matchesSearch = rule.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           rule.description.toLowerCase().includes(searchQuery.toLowerCase())
+                           rule.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                           rule.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                           rule.libs.some(lib => lib.toLowerCase().includes(searchQuery.toLowerCase()))
       const matchesLanguage = selectedLanguage === 'All' || rule.language === selectedLanguage
       const matchesCategory = selectedCategory === 'All' || rule.category === selectedCategory
-      
+
       return matchesSearch && matchesLanguage && matchesCategory
     })
-  }, [searchQuery, selectedLanguage, selectedCategory])
+  }, [searchQuery, selectedLanguage, selectedCategory, allRules])
 
-  const copyToClipboard = async (code: string, id: number) => {
+  const copyToClipboard = async (code: string, id: string) => {
     try {
       await navigator.clipboard.writeText(code)
       setCopiedId(id)
@@ -255,7 +187,7 @@ export default function RulesPage() {
           transition={{ delay: 0.5, duration: 0.5 }}
         >
           <p className="text-gray-400">
-            Showing {filteredRules.length} of {rulesData.length} rules
+            Showing {filteredRules.length} of {allRules.length} rules
           </p>
         </motion.div>
 
@@ -282,34 +214,66 @@ export default function RulesPage() {
                   <div className="flex-1">
                     <h3 className="text-xl font-semibold text-white mb-2">{rule.title}</h3>
                     <p className="text-gray-400 text-sm mb-3">{rule.description}</p>
-                    
-                    <div className="flex items-center space-x-4 text-sm">
+
+                    <div className="flex flex-wrap items-center gap-2 text-sm mb-3">
                       <span className="bg-primary-500/20 text-primary-400 px-2 py-1 rounded">
                         {rule.language}
                       </span>
                       <span className="bg-accent-500/20 text-accent-400 px-2 py-1 rounded">
                         {rule.category}
                       </span>
-                      <div className="flex items-center space-x-1 text-yellow-400">
-                        <Star className="w-4 h-4 fill-current" />
-                        <span>{rule.rating}</span>
-                      </div>
-                      <div className="flex items-center space-x-1 text-gray-400">
-                        <Download className="w-4 h-4" />
-                        <span>{rule.downloads.toLocaleString()}</span>
-                      </div>
+                      {rule.rating && (
+                        <div className="flex items-center space-x-1 text-yellow-400">
+                          <Star className="w-4 h-4 fill-current" />
+                          <span>{rule.rating.toFixed(1)}</span>
+                        </div>
+                      )}
+                      {rule.downloads && (
+                        <div className="flex items-center space-x-1 text-gray-400">
+                          <Download className="w-4 h-4" />
+                          <span>{rule.downloads.toLocaleString()}</span>
+                        </div>
+                      )}
                     </div>
+
+                    {/* Tags */}
+                    {rule.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {rule.tags.slice(0, 5).map((tag, tagIndex) => (
+                          <span key={tagIndex} className="bg-gray-700/50 text-gray-300 px-2 py-1 rounded text-xs">
+                            {tag}
+                          </span>
+                        ))}
+                        {rule.tags.length > 5 && (
+                          <span className="text-gray-400 text-xs">+{rule.tags.length - 5} more</span>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Libraries */}
+                    {rule.libs.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {rule.libs.slice(0, 3).map((lib, libIndex) => (
+                          <span key={libIndex} className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs">
+                            {lib}
+                          </span>
+                        ))}
+                        {rule.libs.length > 3 && (
+                          <span className="text-gray-400 text-xs">+{rule.libs.length - 3} more</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Code Preview */}
+                {/* Content Preview */}
                 <div className="relative">
-                  <pre className="bg-dark-900 p-4 rounded-lg text-sm text-gray-300 overflow-x-auto">
-                    <code>{rule.code}</code>
-                  </pre>
-                  
+                  <div className="bg-dark-900 p-4 rounded-lg text-sm text-gray-300 overflow-x-auto max-h-60 overflow-y-auto">
+                    <pre className="whitespace-pre-wrap">{rule.content.substring(0, 1000)}{rule.content.length > 1000 ? '...' : ''}</pre>
+                  </div>
+
                   <button
-                    onClick={() => copyToClipboard(rule.code, rule.id)}
+                    onClick={() => copyToClipboard(rule.content, rule.id)}
                     className="absolute top-2 right-2 p-2 bg-dark-800 hover:bg-dark-700 rounded-lg transition-colors"
                     title="Copy to clipboard"
                   >

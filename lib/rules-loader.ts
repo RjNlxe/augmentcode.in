@@ -229,16 +229,24 @@ function convertRule(rule: any, index: number): Rule {
   const ratingIndex = index % staticRatings.length
   const downloadIndex = index % staticDownloads.length
 
+  // Normalize line endings to prevent hydration issues
+  const normalizeText = (text: string) => text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+
+  const normalizedContent = rule.content ? normalizeText(rule.content) : ''
+  const description = normalizedContent
+    ? normalizedContent.substring(0, 200).replace(/\n+/g, ' ').trim() + '...'
+    : 'No description available'
+
   return {
     id: `${rule.slug || 'rule'}-${index}`,
     title: rule.title || 'Untitled Rule',
-    description: rule.content ? rule.content.substring(0, 200) + '...' : 'No description available',
+    description,
     language,
     category,
     tags: rule.tags || [],
     libs: rule.libs || [],
     slug: rule.slug || '',
-    content: rule.content || '',
+    content: normalizedContent,
     rating: staticRatings[ratingIndex],
     downloads: staticDownloads[downloadIndex]
   }

@@ -17,6 +17,12 @@ export default function RulesPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [languagesExpanded, setLanguagesExpanded] = useState(true)
   const [categoriesExpanded, setCategoriesExpanded] = useState(true)
+  const [isClient, setIsClient] = useState(false)
+
+  // Client-side hydration check
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   // Modal scroll lock effect
   useEffect(() => {
@@ -567,8 +573,20 @@ ${rule.content}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
           >
-            <AnimatePresence>
-              {filteredAndSortedRules.map((rule, index) => (
+            {!isClient ? (
+              // Server-side placeholder to prevent hydration mismatch
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, index) => (
+                  <div key={index} className="bg-white/5 rounded-2xl p-6 animate-pulse">
+                    <div className="h-4 bg-gray-700 rounded mb-3"></div>
+                    <div className="h-3 bg-gray-700 rounded mb-2"></div>
+                    <div className="h-3 bg-gray-700 rounded w-3/4"></div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <AnimatePresence>
+                {filteredAndSortedRules.map((rule, index) => (
                 <motion.div
                   key={rule.id}
                   layout
@@ -736,12 +754,13 @@ ${rule.content}
                     )}
                   </div>
                 </motion.div>
-              ))}
-            </AnimatePresence>
+                ))}
+              </AnimatePresence>
+            )}
           </motion.div>
 
           {/* No Results */}
-          {filteredAndSortedRules.length === 0 && (
+          {isClient && filteredAndSortedRules.length === 0 && (
             <motion.div
               className="text-center py-16"
               initial={{ opacity: 0 }}

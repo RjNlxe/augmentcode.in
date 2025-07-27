@@ -1,84 +1,113 @@
 'use client'
 
-import { useState } from 'react'
-import { Search, Code2, Sparkles, ArrowRight, Star, Users, Zap, BookOpen, Palette, Brain, Globe, Chrome } from 'lucide-react'
-import Image from 'next/image'
+import { useState, useEffect } from 'react'
+import { Search, Code2, Sparkles, ArrowRight, Zap, BookOpen, Palette, Brain, Globe, Rocket, Heart } from 'lucide-react'
 import Link from 'next/link'
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('')
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
 
   const featuredRules = [
     {
-      title: "Design System Rules",
-      description: "Beautiful, consistent UI components and design patterns",
-      icon: <Palette className="w-6 h-6" />,
-      color: "from-pink-500 to-purple-600",
-      category: "Design"
+      title: "Design System",
+      description: "Beautiful UI components and design patterns for modern applications",
+      icon: <Palette className="w-8 h-8" />,
+      gradient: "from-pink-500 via-rose-500 to-purple-600",
+      delay: 0.1
     },
     {
-      title: "Deep Learning Patterns",
+      title: "Deep Learning",
       description: "Advanced AI/ML patterns and neural network architectures",
-      icon: <Brain className="w-6 h-6" />,
-      color: "from-blue-500 to-cyan-600",
-      category: "AI/ML"
+      icon: <Brain className="w-8 h-8" />,
+      gradient: "from-blue-500 via-cyan-500 to-indigo-600",
+      delay: 0.2
     },
     {
-      title: "Django Best Practices",
-      description: "Scalable Python web development with Django framework",
-      icon: <Globe className="w-6 h-6" />,
-      color: "from-green-500 to-emerald-600",
-      category: "Backend"
+      title: "Django Framework",
+      description: "Scalable Python web development with best practices",
+      icon: <Globe className="w-8 h-8" />,
+      gradient: "from-green-500 via-emerald-500 to-teal-600",
+      delay: 0.3
     },
     {
-      title: "Chrome Extension Dev",
+      title: "Chrome Extensions",
       description: "Modern browser extension development patterns",
-      icon: <Chrome className="w-6 h-6" />,
-      color: "from-yellow-500 to-orange-600",
-      category: "Browser"
+      icon: <Rocket className="w-8 h-8" />,
+      gradient: "from-yellow-500 via-orange-500 to-red-600",
+      delay: 0.4
     },
     {
-      title: "Next.js Optimization",
-      description: "Performance-first React applications with Next.js",
-      icon: <Zap className="w-6 h-6" />,
-      color: "from-purple-500 to-indigo-600",
-      category: "Frontend"
+      title: "Next.js Mastery",
+      description: "Performance-first React applications and optimization",
+      icon: <Zap className="w-8 h-8" />,
+      gradient: "from-purple-500 via-violet-500 to-indigo-600",
+      delay: 0.5
     },
     {
-      title: "Python & Rust Integration",
-      description: "High-performance systems with Python and Rust",
-      icon: <Code2 className="w-6 h-6" />,
-      color: "from-red-500 to-pink-600",
-      category: "Systems"
+      title: "Python & Rust",
+      description: "High-performance systems programming integration",
+      icon: <Code2 className="w-8 h-8" />,
+      gradient: "from-red-500 via-pink-500 to-rose-600",
+      delay: 0.6
     }
   ]
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.1),transparent_50%)]" />
-      <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(16,185,129,0.02)_50%,transparent_75%)]" />
+    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(120,119,198,0.3),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,119,198,0.3),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_40%_40%,rgba(16,185,129,0.2),transparent_50%)]" />
+
+        {/* Floating Orbs */}
+        <div
+          className="absolute w-96 h-96 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full blur-3xl animate-pulse"
+          style={{
+            left: `${mousePosition.x * 0.02}px`,
+            top: `${mousePosition.y * 0.02}px`,
+            transform: 'translate(-50%, -50%)'
+          }}
+        />
+        <div
+          className="absolute w-80 h-80 bg-gradient-to-r from-emerald-400/20 to-cyan-400/20 rounded-full blur-3xl animate-pulse"
+          style={{
+            right: `${mousePosition.x * 0.01}px`,
+            bottom: `${mousePosition.y * 0.01}px`,
+            transform: 'translate(50%, 50%)'
+          }}
+        />
+      </div>
 
       {/* Header */}
       <header className="relative z-10 p-6 md:p-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-white" />
+          <div className="flex items-center space-x-3 group">
+            <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+              <Sparkles className="w-7 h-7 text-white" />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-400 bg-clip-text text-transparent">
+            <span className="text-3xl font-black bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
               augmentcode
             </span>
           </div>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/rules" className="text-gray-300 hover:text-white transition-colors">
+            <Link href="/rules" className="text-gray-300 hover:text-white transition-all duration-300 hover:scale-105 font-medium">
               Rules
             </Link>
-            <Link href="/mcp" className="text-gray-300 hover:text-white transition-colors">
+            <Link href="/mcp" className="text-gray-300 hover:text-white transition-all duration-300 hover:scale-105 font-medium">
               MCP
             </Link>
-            <Link href="/home" className="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-lg text-white transition-colors">
+            <Link href="/home" className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 px-6 py-3 rounded-2xl text-white transition-all duration-300 hover:scale-105 shadow-lg font-medium">
               Platform
             </Link>
           </nav>
@@ -87,58 +116,66 @@ export default function Home() {
 
       {/* Hero Section */}
       <div className="relative z-10 flex-1 flex items-center justify-center px-6 md:px-8 py-20">
-        <div className="max-w-6xl mx-auto text-center space-y-16">
+        <div className="max-w-7xl mx-auto text-center space-y-20">
 
           {/* Main Hero */}
-          <div className="space-y-8">
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black leading-tight">
-              <span className="bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 bg-clip-text text-transparent">
-                Join the
-              </span>
-              <br />
-              <span className="text-white">
-                Augment Community
-              </span>
-            </h1>
+          <div className="space-y-12 animate-fade-in">
+            <div className="space-y-6">
+              <h1 className="text-6xl md:text-8xl lg:text-9xl font-black leading-tight tracking-tight">
+                <span className="inline-block bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent animate-gradient">
+                  Join the
+                </span>
+                <br />
+                <span className="inline-block text-white animate-slide-up">
+                  Augment Community
+                </span>
+              </h1>
 
-            <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed font-light">
-              Discover powerful coding rules, best practices, and cutting-edge patterns from the world's most innovative developers
-            </p>
+              <p className="text-2xl md:text-3xl text-gray-300 max-w-5xl mx-auto leading-relaxed font-light animate-fade-in-delay">
+                Discover powerful coding rules and cutting-edge patterns
+              </p>
+            </div>
 
             {/* Search Bar */}
-            <div className="max-w-2xl mx-auto">
-              <div className="relative">
-                <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-emerald-400 w-6 h-6" />
-                <input
-                  type="text"
-                  placeholder="Search rules, patterns, frameworks..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-16 pr-6 py-5 bg-dark-900/80 border border-emerald-500/30 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300 text-lg"
-                />
-                <button className="absolute right-3 top-1/2 transform -translate-y-1/2 bg-emerald-500 hover:bg-emerald-600 px-6 py-2 rounded-xl text-white font-medium transition-colors">
-                  Search
-                </button>
+            <div className="max-w-3xl mx-auto animate-scale-in">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-purple-500/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500" />
+                <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-2">
+                  <div className="flex items-center">
+                    <Search className="ml-6 text-emerald-400 w-7 h-7" />
+                    <input
+                      type="text"
+                      placeholder="Search rules, patterns, frameworks..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="flex-1 px-6 py-5 bg-transparent text-white placeholder-gray-400 focus:outline-none text-xl"
+                    />
+                    <button className="bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 px-8 py-4 rounded-2xl text-white font-semibold transition-all duration-300 hover:scale-105 shadow-lg">
+                      Search
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8 animate-fade-in-delay-2">
               <Link
                 href="/rules"
-                className="group inline-flex items-center space-x-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 px-8 py-4 rounded-2xl font-semibold text-white transition-all duration-300 shadow-lg hover:shadow-emerald-500/25"
+                className="group relative inline-flex items-center space-x-3 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 px-10 py-5 rounded-3xl font-bold text-white transition-all duration-500 hover:scale-110 shadow-2xl hover:shadow-emerald-500/50"
               >
-                <BookOpen className="w-5 h-5" />
-                <span>Explore Rules</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-500" />
+                <BookOpen className="relative w-6 h-6" />
+                <span className="relative text-xl">Explore Rules</span>
+                <ArrowRight className="relative w-6 h-6 group-hover:translate-x-2 transition-transform duration-500" />
               </Link>
 
               <Link
                 href="/mcp"
-                className="group inline-flex items-center space-x-3 bg-dark-800/50 hover:bg-dark-700/50 border border-emerald-500/30 hover:border-emerald-500/50 px-8 py-4 rounded-2xl font-semibold text-white transition-all duration-300"
+                className="group inline-flex items-center space-x-3 bg-white/10 hover:bg-white/20 backdrop-blur-xl border border-white/20 hover:border-white/40 px-10 py-5 rounded-3xl font-bold text-white transition-all duration-500 hover:scale-110"
               >
-                <Zap className="w-5 h-5 text-emerald-400" />
-                <span>MCP Integration</span>
+                <Zap className="w-6 h-6 text-emerald-400" />
+                <span className="text-xl">MCP Integration</span>
               </Link>
             </div>
           </div>
@@ -146,95 +183,154 @@ export default function Home() {
 
 
           {/* Featured Rules */}
-          <div className="space-y-12">
-            <div className="text-center">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Featured Rules & Patterns
+          <div className="space-y-16 animate-fade-in-delay-3">
+            <div className="text-center space-y-6">
+              <h2 className="text-4xl md:text-6xl font-black text-white">
+                Featured <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Rules</span>
               </h2>
-              <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-                Handpicked coding rules and best practices from our community
+              <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                Handpicked coding patterns that will transform your development workflow
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredRules.map((rule, index) => (
                 <div
                   key={index}
-                  className="group relative bg-dark-800/50 backdrop-blur-sm border border-emerald-500/20 rounded-2xl p-6 hover:border-emerald-500/40 transition-all duration-300 hover:transform hover:scale-105"
+                  className="group relative"
+                  style={{
+                    animation: `fadeInUp 0.8s ease-out ${rule.delay}s both`
+                  }}
                 >
-                  <div className={`w-12 h-12 bg-gradient-to-r ${rule.color} rounded-xl flex items-center justify-center mb-4 text-white`}>
-                    {rule.icon}
-                  </div>
+                  {/* Card Glow Effect */}
+                  <div className={`absolute inset-0 bg-gradient-to-r ${rule.gradient} rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-all duration-700 scale-105`} />
 
-                  <h3 className="text-xl font-semibold text-white mb-2 group-hover:text-emerald-400 transition-colors">
-                    {rule.title}
-                  </h3>
+                  {/* Card */}
+                  <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 hover:bg-white/10 transition-all duration-500 hover:scale-105 hover:border-white/20">
+                    {/* Icon */}
+                    <div className={`w-16 h-16 bg-gradient-to-r ${rule.gradient} rounded-2xl flex items-center justify-center mb-6 text-white shadow-2xl group-hover:scale-110 transition-transform duration-500`}>
+                      {rule.icon}
+                    </div>
 
-                  <p className="text-gray-400 mb-4 leading-relaxed">
-                    {rule.description}
-                  </p>
+                    {/* Content */}
+                    <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-emerald-400 group-hover:to-cyan-400 group-hover:bg-clip-text transition-all duration-500">
+                      {rule.title}
+                    </h3>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-emerald-400 bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-500/30">
-                      {rule.category}
-                    </span>
-                    <ArrowRight className="w-4 h-4 text-gray-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all duration-300" />
+                    <p className="text-gray-400 leading-relaxed text-lg group-hover:text-gray-300 transition-colors duration-500">
+                      {rule.description}
+                    </p>
+
+                    {/* Arrow */}
+                    <div className="mt-6 flex justify-end">
+                      <div className="w-12 h-12 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                        <ArrowRight className="w-6 h-6 text-emerald-400 group-hover:translate-x-1 transition-transform duration-500" />
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* View All Button */}
-            <div className="text-center pt-8">
+            <div className="text-center pt-12">
               <Link
                 href="/rules"
-                className="inline-flex items-center space-x-2 text-emerald-400 hover:text-emerald-300 font-medium transition-colors group"
+                className="group relative inline-flex items-center space-x-4 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 hover:from-emerald-500/20 hover:to-cyan-500/20 backdrop-blur-xl border border-emerald-500/30 hover:border-emerald-500/50 px-12 py-6 rounded-3xl font-bold text-white transition-all duration-500 hover:scale-110"
               >
-                <span>View All Rules</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                <span className="text-2xl">View All Rules</span>
+                <ArrowRight className="w-8 h-8 group-hover:translate-x-2 transition-transform duration-500" />
               </Link>
             </div>
           </div>
 
-          {/* Stats Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-16">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Code2 className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-2">500+</h3>
-              <p className="text-gray-400">Coding Rules</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-2">10K+</h3>
-              <p className="text-gray-400">Developers</p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Star className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-2">50+</h3>
-              <p className="text-gray-400">Languages</p>
-            </div>
-          </div>
         </div>
       </div>
 
-
-
       {/* Footer */}
-      <footer className="relative z-10 p-6 md:p-8 border-t border-emerald-500/10">
+      <footer className="relative z-10 p-8 border-t border-white/10">
         <div className="max-w-7xl mx-auto text-center">
-          <p className="text-gray-500 text-sm">
-            © 2025 augmentcode.in. Built with ❤️ by the Augment community.
+          <p className="text-gray-400 text-lg flex items-center justify-center space-x-2">
+            <span>© 2025 augmentcode.in. Built with</span>
+            <Heart className="w-5 h-5 text-red-400 animate-pulse" />
+            <span>by the Augment community.</span>
           </p>
         </div>
       </footer>
+
+      {/* Custom CSS Animations */}
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-in {
+          animation: fadeInUp 1s ease-out;
+        }
+
+        .animate-fade-in-delay {
+          animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .animate-fade-in-delay-2 {
+          animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .animate-fade-in-delay-3 {
+          animation: fadeInUp 1s ease-out 0.9s both;
+        }
+
+        .animate-slide-up {
+          animation: slideUp 1.2s ease-out 0.2s both;
+        }
+
+        .animate-scale-in {
+          animation: scaleIn 1s ease-out 0.5s both;
+        }
+
+        .animate-gradient {
+          background-size: 200% 200%;
+          animation: gradientShift 3s ease-in-out infinite;
+        }
+
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(50px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: scale(0.9);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes gradientShift {
+          0%, 100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+        }
+      `}</style>
     </main>
   )
 }

@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Filter, Code, Star, Download, Copy, ChevronDown, X, Grid, List, BookOpen, Zap, Tag, Eye, FileDown, Menu, Sparkles, Layers, ChevronRight } from 'lucide-react'
+import { Search, Code, Copy, X, Grid, List, BookOpen, Zap, Tag, Eye, FileDown, Menu, Sparkles, Layers, ChevronRight } from 'lucide-react'
 import { getAllRules, getLanguages, getCategories, type Rule } from '@/lib/rules-loader'
 
+
+const ITEMS_PER_PAGE = 24 // Optimized for performance
 
 export default function RulesPage() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -13,16 +15,27 @@ export default function RulesPage() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedRule, setSelectedRule] = useState<Rule | null>(null)
-  const [sortBy, setSortBy] = useState<'name' | 'rating' | 'downloads'>('name')
+  const [sortBy, setSortBy] = useState<'name'>('name')
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [languagesExpanded, setLanguagesExpanded] = useState(true)
   const [categoriesExpanded, setCategoriesExpanded] = useState(true)
   const [isClient, setIsClient] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [searchDebounced, setSearchDebounced] = useState('')
 
   // Client-side hydration check
   useEffect(() => {
     setIsClient(true)
   }, [])
+
+  // Debounced search for better performance
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchDebounced(searchQuery)
+      setCurrentPage(1) // Reset to first page on search
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchQuery])
 
   // Modal scroll lock effect
   useEffect(() => {
@@ -37,40 +50,40 @@ export default function RulesPage() {
     }
   }, [selectedRule])
 
-  // Load actual rules from your directory
-  const allRules = getAllRules()
-  const languages = getLanguages()
-  const categories = getCategories()
+  // Load actual rules from your directory (memoized for performance)
+  const allRules = useMemo(() => getAllRules(), [])
+  const languages = useMemo(() => getLanguages(), [])
+  const categories = useMemo(() => getCategories(), [])
 
-  const filteredAndSortedRules = useMemo(() => {
-    let filtered = allRules.filter(rule => {
-      const matchesSearch = rule.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           rule.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           rule.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                           rule.libs.some(lib => lib.toLowerCase().includes(searchQuery.toLowerCase()))
+  // Optimized filtering with debounced search
+  const filteredRules = useMemo(() => {
+    return allRules.filter(rule => {
+      const matchesSearch = !searchDebounced ||
+        rule.title.toLowerCase().includes(searchDebounced.toLowerCase()) ||
+        rule.description.toLowerCase().includes(searchDebounced.toLowerCase()) ||
+        rule.tags.some(tag => tag.toLowerCase().includes(searchDebounced.toLowerCase())) ||
+        rule.libs.some(lib => lib.toLowerCase().includes(searchDebounced.toLowerCase()))
+
       const matchesLanguage = selectedLanguage === 'All' || rule.language === selectedLanguage
       const matchesCategory = selectedCategory === 'All' || rule.category === selectedCategory
 
       return matchesSearch && matchesLanguage && matchesCategory
     })
+  }, [allRules, searchDebounced, selectedLanguage, selectedCategory])
 
-    // Sort rules
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'rating':
-          return (b.rating || 0) - (a.rating || 0)
-        case 'downloads':
-          return (b.downloads || 0) - (a.downloads || 0)
-        case 'name':
-        default:
-          return a.title.localeCompare(b.title)
-      }
-    })
+  // Sort and paginate rules
+  const { paginatedRules, totalPages } = useMemo(() => {
+    const sorted = [...filteredRules].sort((a, b) => a.title.localeCompare(b.title))
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    const endIndex = startIndex + ITEMS_PER_PAGE
 
-    return filtered
-  }, [searchQuery, selectedLanguage, selectedCategory, allRules, sortBy])
+    return {
+      paginatedRules: sorted.slice(startIndex, endIndex),
+      totalPages: Math.ceil(sorted.length / ITEMS_PER_PAGE)
+    }
+  }, [filteredRules, currentPage])
 
-  const copyToClipboard = async (code: string, id: string) => {
+  const copyToClipboard = useCallback(async (code: string, id: string) => {
     try {
       await navigator.clipboard.writeText(code)
       setCopiedId(id)
@@ -78,9 +91,9 @@ export default function RulesPage() {
     } catch (err) {
       console.error('Failed to copy:', err)
     }
-  }
+  }, [])
 
-  const downloadRule = (rule: Rule) => {
+  const downloadRule = useCallback((rule: Rule) => {
     const content = `# ${rule.title}
 
 ## Description
@@ -111,7 +124,7 @@ ${rule.content}
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-  }
+  }, [])
 
   return (
     <main className="min-h-screen bg-dark-950 text-white flex">
@@ -429,17 +442,6 @@ ${rule.content}
 
                 {/* Controls */}
                 <div className="flex items-center gap-3">
-                  {/* Sort Control */}
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as 'name' | 'rating' | 'downloads')}
-                    className="bg-white/5 border border-emerald-500/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 backdrop-blur-sm"
-                  >
-                    <option value="name" className="bg-dark-900">Name A-Z</option>
-                    <option value="rating" className="bg-dark-900">Highest Rated</option>
-                    <option value="downloads" className="bg-dark-900">Most Popular</option>
-                  </select>
-
                   {/* View Controls */}
                   <div className="flex bg-white/5 rounded-xl p-1 border border-emerald-500/30">
                     <motion.button
@@ -546,19 +548,19 @@ ${rule.content}
           >
             <div>
               <h2 className="text-2xl font-semibold text-white mb-2">
-                {filteredAndSortedRules.length === 0 ? 'No rules found' :
-                 filteredAndSortedRules.length === allRules.length ? 'All Rules' :
-                 `${filteredAndSortedRules.length} Rules Found`}
+                {filteredRules.length === 0 ? 'No rules found' :
+                 filteredRules.length === allRules.length ? 'All Rules' :
+                 `${filteredRules.length} Rules Found`}
               </h2>
               <p className="text-gray-400">
-                {filteredAndSortedRules.length === 0 ? 'Try adjusting your search or filters' :
-                 `Showing ${filteredAndSortedRules.length} of ${allRules.length} total rules`}
+                {filteredRules.length === 0 ? 'Try adjusting your search or filters' :
+                 `Showing ${paginatedRules.length} of ${filteredRules.length} rules (Page ${currentPage} of ${totalPages})`}
               </p>
             </div>
 
-            {filteredAndSortedRules.length > 0 && (
+            {filteredRules.length > 0 && (
               <div className="text-sm text-gray-400">
-                Sorted by {sortBy === 'name' ? 'Name' : sortBy === 'rating' ? 'Rating' : 'Popularity'}
+                Sorted alphabetically by name
               </div>
             )}
           </motion.div>
@@ -586,7 +588,7 @@ ${rule.content}
               </div>
             ) : (
               <AnimatePresence>
-                {filteredAndSortedRules.map((rule, index) => (
+                {paginatedRules.map((rule, index) => (
                 <motion.div
                   key={rule.id}
                   layout
@@ -619,14 +621,10 @@ ${rule.content}
                       <>
                         {/* Header */}
                         <div className="mb-4">
-                          <div className="flex items-start justify-between mb-3">
+                          <div className="mb-3">
                             <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors line-clamp-2 cursor-pointer">
                               {rule.title}
                             </h3>
-                            <div className="flex items-center space-x-1 text-yellow-400 ml-2">
-                              <Star className="w-4 h-4 fill-current" />
-                              <span className="text-sm">{rule.rating?.toFixed(1)}</span>
-                            </div>
                           </div>
 
                         <p className="text-gray-400 text-sm line-clamp-2 mb-3">
@@ -661,16 +659,16 @@ ${rule.content}
                         {/* Footer */}
                         <div className="flex items-center justify-between text-sm text-gray-400 pt-3 border-t border-emerald-500/20">
                           <div className="flex items-center space-x-3">
-                            <div className="flex items-center space-x-1">
-                              <Download className="w-4 h-4" />
-                              <span>{rule.downloads?.toLocaleString()}</span>
-                            </div>
                             {rule.libs.length > 0 && (
                               <div className="flex items-center space-x-1">
                                 <BookOpen className="w-4 h-4" />
                                 <span>{rule.libs.length} libs</span>
                               </div>
                             )}
+                            <div className="flex items-center space-x-1">
+                              <Tag className="w-4 h-4" />
+                              <span>{rule.tags.length} tags</span>
+                            </div>
                           </div>
                           <div className="flex items-center space-x-2">
                             <motion.button
@@ -696,20 +694,10 @@ ${rule.content}
                     // List View
                     <>
                       <div className="flex-1">
-                        <div className="flex items-start justify-between mb-2">
-                          <h3 className="text-lg font-semibold text-white group-hover:text-primary-400 transition-colors">
+                        <div className="mb-2">
+                          <h3 className="text-lg font-semibold text-white group-hover:text-emerald-400 transition-colors">
                             {rule.title}
                           </h3>
-                          <div className="flex items-center space-x-4 text-sm">
-                            <div className="flex items-center space-x-1 text-yellow-400">
-                              <Star className="w-4 h-4 fill-current" />
-                              <span>{rule.rating?.toFixed(1)}</span>
-                            </div>
-                            <div className="flex items-center space-x-1 text-gray-400">
-                              <Download className="w-4 h-4" />
-                              <span>{rule.downloads?.toLocaleString()}</span>
-                            </div>
-                          </div>
                         </div>
 
                         <p className="text-gray-400 text-sm mb-3 line-clamp-1">
@@ -760,7 +748,7 @@ ${rule.content}
           </motion.div>
 
           {/* No Results */}
-          {isClient && filteredAndSortedRules.length === 0 && (
+          {isClient && filteredRules.length === 0 && (
             <motion.div
               className="text-center py-16"
               initial={{ opacity: 0 }}
@@ -787,6 +775,61 @@ ${rule.content}
             </motion.div>
           )}
         </div>
+
+        {/* Pagination */}
+        {isClient && totalPages > 1 && (
+          <div className="flex justify-center items-center space-x-4 py-8">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 bg-white/5 border border-emerald-500/30 rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-500/20 transition-colors"
+            >
+              Previous
+            </button>
+
+            <div className="flex items-center space-x-2">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const page = i + 1
+                return (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`px-3 py-2 rounded-lg transition-colors ${
+                      currentPage === page
+                        ? 'bg-emerald-500 text-white'
+                        : 'bg-white/5 text-gray-400 hover:bg-emerald-500/20 hover:text-white'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                )
+              })}
+              {totalPages > 5 && (
+                <>
+                  <span className="text-gray-400">...</span>
+                  <button
+                    onClick={() => setCurrentPage(totalPages)}
+                    className={`px-3 py-2 rounded-lg transition-colors ${
+                      currentPage === totalPages
+                        ? 'bg-emerald-500 text-white'
+                        : 'bg-white/5 text-gray-400 hover:bg-emerald-500/20 hover:text-white'
+                    }`}
+                  >
+                    {totalPages}
+                  </button>
+                </>
+              )}
+            </div>
+
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-4 py-2 bg-white/5 border border-emerald-500/30 rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-emerald-500/20 transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Rule Detail Modal */}
@@ -821,13 +864,13 @@ ${rule.content}
                       <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-lg font-medium border border-green-500/30">
                         {selectedRule.category}
                       </span>
-                      <div className="flex items-center space-x-1 text-yellow-400">
-                        <Star className="w-4 h-4 fill-current" />
-                        <span>{selectedRule.rating?.toFixed(1)}</span>
+                      <div className="flex items-center space-x-1 text-gray-400">
+                        <Tag className="w-4 h-4" />
+                        <span>{selectedRule.tags.length} tags</span>
                       </div>
                       <div className="flex items-center space-x-1 text-gray-400">
-                        <Download className="w-4 h-4" />
-                        <span>{selectedRule.downloads?.toLocaleString()}</span>
+                        <BookOpen className="w-4 h-4" />
+                        <span>{selectedRule.libs.length} libraries</span>
                       </div>
                     </div>
                   </div>

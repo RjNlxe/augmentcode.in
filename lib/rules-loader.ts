@@ -105,8 +105,6 @@ export interface Rule {
   libs: string[]
   slug: string
   content: string
-  rating?: number
-  downloads?: number
 }
 
 // Helper function to extract language from tags or filename
@@ -222,12 +220,7 @@ function convertRule(rule: any, index: number): Rule {
   const language = extractLanguage(rule.tags || [], rule.slug || '')
   const category = extractCategory(rule.tags || [], rule.libs || [], rule.slug || '')
 
-  // Static ratings to prevent hydration issues
-  const staticRatings = [4.8, 4.5, 4.9, 4.3, 4.7, 4.6, 4.4, 4.8, 4.5, 4.9]
-  const staticDownloads = [15420, 8930, 22150, 5670, 18340, 12890, 7450, 19230, 11560, 25780]
-
-  const ratingIndex = index % staticRatings.length
-  const downloadIndex = index % staticDownloads.length
+  // Removed fake ratings and downloads for better performance
 
   // Normalize line endings to prevent hydration issues
   const normalizeText = (text: string) => text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
@@ -246,9 +239,7 @@ function convertRule(rule: any, index: number): Rule {
     tags: rule.tags || [],
     libs: rule.libs || [],
     slug: rule.slug || '',
-    content: normalizedContent,
-    rating: staticRatings[ratingIndex],
-    downloads: staticDownloads[downloadIndex]
+    content: normalizedContent
   }
 }
 

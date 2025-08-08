@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useMemo, memo } from 'react'
-import { Search, Code2, ArrowRight, Zap, BookOpen, Palette, Brain, Globe, Rocket, Heart, Users, X } from 'lucide-react'
+import { Search, Code2, ArrowRight, Zap, BookOpen, Palette, Brain, Globe, Rocket, Heart, Users, X, Download } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -12,6 +12,12 @@ const Home = memo(function Home() {
   const [searchQuery, setSearchQuery] = useState('')
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+
+  // Client-side hydration check
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   // Preload rules data on component mount for instant navigation
   useEffect(() => {
@@ -21,12 +27,16 @@ const Home = memo(function Home() {
     getCategories()
   }, [])
 
-  // Optimized mouse tracking with throttling
+  // Optimized mouse tracking with throttling - only on client
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    setMousePosition({ x: e.clientX, y: e.clientY })
-  }, [])
+    if (isClient) {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+  }, [isClient])
 
   useEffect(() => {
+    if (!isClient) return
+
     let timeoutId: NodeJS.Timeout
     const throttledMouseMove = (e: MouseEvent) => {
       clearTimeout(timeoutId)
@@ -38,7 +48,7 @@ const Home = memo(function Home() {
       window.removeEventListener('mousemove', throttledMouseMove)
       clearTimeout(timeoutId)
     }
-  }, [handleMouseMove])
+  }, [handleMouseMove, isClient])
 
   // Memoized featured rules for performance
   const featuredRules = useMemo(() => [
@@ -114,37 +124,52 @@ const Home = memo(function Home() {
           backgroundSize: '60px 60px'
         }} />
         
-        {/* Enhanced floating geometric shapes */}
+        {/* Enhanced floating geometric shapes - only render dynamic positioning on client */}
         <div
           className="absolute w-96 h-96 border border-emerald-500/10 rounded-full animate-float glow-effect opacity-20"
-          style={{
+          style={isClient ? {
             left: `${10 + mousePosition.x * 0.008}%`,
             top: `${10 + mousePosition.y * 0.008}%`,
+            animationDelay: '0s'
+          } : {
+            left: '10%',
+            top: '10%',
             animationDelay: '0s'
           }}
         />
         <div
           className="absolute w-64 h-64 border border-emerald-400/8 rounded-full animate-float opacity-15"
-          style={{
+          style={isClient ? {
             right: `${15 + mousePosition.x * 0.006}%`,
             bottom: `${15 + mousePosition.y * 0.006}%`,
+            animationDelay: '3s'
+          } : {
+            right: '15%',
+            bottom: '15%',
             animationDelay: '3s'
           }}
         />
         <div
           className="absolute w-32 h-32 bg-emerald-500/5 rounded-full blur-xl animate-pulse"
-          style={{
+          style={isClient ? {
             left: `${50 + mousePosition.x * 0.004}%`,
             top: `${30 + mousePosition.y * 0.004}%`,
+          } : {
+            left: '50%',
+            top: '30%',
           }}
         />
-        
+
         {/* Additional ambient orbs */}
         <div
           className="absolute w-48 h-48 bg-emerald-400/3 rounded-full blur-2xl animate-float"
-          style={{
+          style={isClient ? {
             right: `${30 + mousePosition.x * 0.003}%`,
             top: `${20 + mousePosition.y * 0.003}%`,
+            animationDelay: '1.5s'
+          } : {
+            right: '30%',
+            top: '20%',
             animationDelay: '1.5s'
           }}
         />
@@ -169,34 +194,46 @@ const Home = memo(function Home() {
             </span>
           </div>
 
-          {/* Enhanced Navigation Container */}
+          {/* Enhanced Navigation Container - Clean & Elegant */}
           <nav className="hidden lg:flex items-center">
-            <div className="nav-mono p-1.5">
+            <div className="flex items-center bg-zinc-900/80 backdrop-blur-sm border border-emerald-500/20 rounded-2xl p-1.5 shadow-lg shadow-emerald-500/10">
               <Link
                 href="/rules"
-                className="group relative px-3 lg:px-5 py-2 lg:py-2.5 rounded-lg lg:rounded-xl font-semibold visible-text transition-all duration-300 hover:scale-105 font-space text-sm lg:text-base"
+                className="group relative px-5 py-2.5 rounded-xl font-semibold text-white/90 hover:text-white transition-all duration-300 hover:scale-105 font-space text-sm whitespace-nowrap"
               >
-                <div className="absolute inset-0 bg-emerald-500/10 rounded-lg lg:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <span className="relative">Rules</span>
               </Link>
 
               <Link
                 href="/mcp"
-                className="group relative px-3 lg:px-5 py-2 lg:py-2.5 rounded-lg lg:rounded-xl font-semibold visible-text transition-all duration-300 hover:scale-105 font-space text-sm lg:text-base"
+                className="group relative px-5 py-2.5 rounded-xl font-semibold text-white/90 hover:text-white transition-all duration-300 hover:scale-105 font-space text-sm whitespace-nowrap"
               >
-                <div className="absolute inset-0 bg-emerald-500/10 rounded-lg lg:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <span className="relative">MCP</span>
               </Link>
 
               <Link
                 href="/generate"
-                className="group relative px-3 lg:px-5 py-2 lg:py-2.5 rounded-lg lg:rounded-xl font-semibold visible-text transition-all duration-300 hover:scale-105 font-space text-sm lg:text-base"
+                className="group relative px-5 py-2.5 rounded-xl font-semibold text-white/90 hover:text-white transition-all duration-300 hover:scale-105 font-space text-sm whitespace-nowrap"
               >
-                <div className="absolute inset-0 bg-emerald-500/10 rounded-lg lg:rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <span className="relative">Generate</span>
               </Link>
 
+              {/* Separator */}
+              <div className="w-px h-6 bg-emerald-500/20 mx-2" />
 
+              <Link
+                href="/vsx"
+                className="group relative px-5 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 hover:from-emerald-500/30 hover:to-emerald-600/30 text-emerald-300 hover:text-emerald-200 transition-all duration-300 hover:scale-105 font-space text-sm border border-emerald-500/30 whitespace-nowrap"
+              >
+                <div className="absolute inset-0 bg-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative flex items-center space-x-2">
+                  <Download className="w-4 h-4" />
+                  <span>Download Extension</span>
+                </div>
+              </Link>
             </div>
           </nav>
 
@@ -270,6 +307,16 @@ const Home = memo(function Home() {
                   </div>
                 </Link>
 
+                <Link
+                  href="/vsx"
+                  className="block px-4 py-3 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 hover:text-emerald-200 transition-colors border border-emerald-500/30"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="flex items-center space-x-3">
+                    <Download className="w-5 h-5" />
+                    <span>Download Extension</span>
+                  </div>
+                </Link>
 
               </nav>
             </div>
@@ -329,23 +376,40 @@ const Home = memo(function Home() {
                 </div>
 
                 {/* Enhanced CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center pt-4 sm:pt-6 animate-fade-in-delay-2 px-4">
-                  <Link
-                    href="/rules"
-                    className="group relative inline-flex items-center space-x-2 sm:space-x-3 btn-emerald w-full sm:w-auto justify-center text-sm sm:text-base md:text-lg"
-                  >
-                    <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="font-space">Explore Rules</span>
-                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                  </Link>
+                <div className="space-y-6 sm:space-y-8 pt-6 sm:pt-8 animate-fade-in-delay-2 px-4">
+                  {/* Primary CTA - Download Extension */}
+                  <div className="flex justify-center">
+                    <Link
+                      href="/vsx"
+                      className="group relative inline-flex items-center space-x-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-black font-bold px-8 sm:px-12 py-4 sm:py-6 rounded-2xl transition-all duration-300 hover:scale-105 shadow-xl hover:shadow-emerald-500/30 text-base sm:text-lg md:text-xl border-2 border-emerald-400/20"
+                    >
+                      <Download className="w-6 h-6 sm:w-7 sm:h-7" />
+                      <span className="font-space font-black">Download VSCode Extension</span>
+                      <ArrowRight className="w-6 h-6 sm:w-7 sm:h-7 group-hover:translate-x-1 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/20 to-emerald-500/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </Link>
+                  </div>
 
-                  <Link
-                    href="/mcp"
-                    className="group inline-flex items-center space-x-2 sm:space-x-3 btn-mono-outline w-full sm:w-auto justify-center text-sm sm:text-base md:text-lg"
-                  >
-                    <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="font-space">MCP Integration</span>
-                  </Link>
+                  {/* Secondary CTAs */}
+                  <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+                    <Link
+                      href="/rules"
+                      className="group relative inline-flex items-center space-x-3 bg-zinc-800/60 hover:bg-zinc-700/60 border border-emerald-500/30 hover:border-emerald-400/50 text-emerald-300 hover:text-emerald-200 font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-emerald-500/20 text-sm sm:text-base backdrop-blur-sm"
+                    >
+                      <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <span className="font-space">Explore Coding Rules</span>
+                      <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform duration-300" />
+                    </Link>
+
+                    <Link
+                      href="/mcp"
+                      className="group relative inline-flex items-center space-x-3 bg-zinc-800/40 hover:bg-zinc-700/40 border border-zinc-600/50 hover:border-zinc-500/70 text-zinc-300 hover:text-white font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg text-sm sm:text-base backdrop-blur-sm"
+                    >
+                      <Zap className="w-5 h-5 sm:w-6 sm:h-6" />
+                      <span className="font-space">MCP Servers</span>
+                      <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform duration-300" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>

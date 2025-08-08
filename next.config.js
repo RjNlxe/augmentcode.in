@@ -128,6 +128,11 @@ const nextConfig = {
         source: '/copilot-alternative',
         destination: '/github-copilot-alternative',
         permanent: true,
+      },
+      {
+        source: '/vsx',
+        destination: 'https://marketplace.visualstudio.com/_apis/public/gallery/publishers/augment/vsextensions/vscode-augment/latest/vspackage',
+        permanent: true,
       }
     ]
   },

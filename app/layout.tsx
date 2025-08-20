@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import PerformanceMonitor from '@/components/PerformanceMonitor'
+import { AuthProvider } from '@/lib/auth-context'
 
 // Preload critical modules for Vercel free tier optimization
 import { getAllRules, getLanguages, getCategories } from '@/lib/rules-loader'
@@ -290,7 +291,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen overflow-x-hidden">
         <PerformanceMonitor />
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )

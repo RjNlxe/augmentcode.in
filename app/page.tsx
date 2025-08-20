@@ -7,8 +7,11 @@ import Image from 'next/image'
 
 // Preload rules on client-side for instant navigation
 import { getAllRules, getLanguages, getCategories } from '@/lib/rules-loader'
+import { useAuth } from '@/lib/auth-context'
+
 
 const Home = memo(function Home() {
+  const { user } = useAuth()
   const [searchQuery, setSearchQuery] = useState('')
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -220,6 +223,44 @@ const Home = memo(function Home() {
                 <div className="absolute inset-0 bg-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <span className="relative">Generate</span>
               </Link>
+
+              <Link
+                href="/projects"
+                className="group relative px-5 py-2.5 rounded-xl font-semibold text-white/90 hover:text-white transition-all duration-300 hover:scale-105 font-space text-sm whitespace-nowrap"
+              >
+                <div className="absolute inset-0 bg-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span className="relative">Projects</span>
+              </Link>
+
+              {user && (
+                <Link
+                  href="/my-projects"
+                  className="group relative px-5 py-2.5 rounded-xl font-semibold text-white/90 hover:text-white transition-all duration-300 hover:scale-105 font-space text-sm whitespace-nowrap"
+                >
+                  <div className="absolute inset-0 bg-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <span className="relative">My Projects</span>
+                </Link>
+              )}
+
+              {user?.is_admin && (
+                <Link
+                  href="/admin"
+                  className="group relative px-5 py-2.5 rounded-xl font-semibold bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 hover:from-emerald-500/30 hover:to-emerald-600/30 text-emerald-300 hover:text-emerald-200 transition-all duration-300 hover:scale-105 font-space text-sm border border-emerald-500/30 whitespace-nowrap"
+                >
+                  <div className="absolute inset-0 bg-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <span className="relative">Admin</span>
+                </Link>
+              )}
+
+              {!user && (
+                <Link
+                  href="/login"
+                  className="group relative px-5 py-2.5 rounded-xl font-semibold text-white/90 hover:text-white transition-all duration-300 hover:scale-105 font-space text-sm whitespace-nowrap"
+                >
+                  <div className="absolute inset-0 bg-emerald-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <span className="relative">Sign In</span>
+                </Link>
+              )}
 
               {/* Separator */}
               <div className="w-px h-6 bg-emerald-500/20 mx-2" />
